@@ -1,0 +1,24 @@
+{
+  "name": "dommus-local",
+  "version": "0.0.0",
+  "description": "Dommus local module",
+  "main": "index.js",
+  "repository": "https://github.com/mateusrdgs/dommus-local.git",
+  "author": "Mateus Rodrigues <devrdgs@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "cors": "^2.8.4",
+    "dotenv": "^4.0.0",
+    "etherport": "^0.2.0",
+    "express": "^4.15.4",
+    "helmet": "^3.8.1",
+    "johnny-five": "^0.11.3",
+    "morgan": "^1.8.2",
+    "nodemon": "^1.11.0",
+    "socket.io": "^2.0.3"
+  },
+  "scripts": {
+    "start": "nodemon index.js"
+  }
+}
