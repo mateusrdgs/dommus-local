@@ -1,5 +1,5 @@
-const roomsCollection = [];
+const rooms = [];
 
 module.exports = {
-  roomsCollection
+  rooms
 }

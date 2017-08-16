@@ -1,5 +1,7 @@
-const roomControllers = require('./controllers/room');
+const roomController = require('./controllers/room'),
+      boardController =  require('./controllers/board');
 
 module.exports = {
-  roomControllers
+  roomController,
+  boardController
 }
