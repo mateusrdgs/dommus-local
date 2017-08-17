@@ -14,9 +14,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 server.listen(port || process.env.PORT, () => console.log(`Express listening on port ${port}`));
 
-/*io.on('connection', socket => {
+io.on('connection', socket => {
   console.log('User connected');
-});*/
+});
 
 module.exports = io;
 

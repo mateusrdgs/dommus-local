@@ -4,9 +4,8 @@ const five = require('johnny-five'),
       io = require('../../index.js');
 
 io.on('connection', socket => {
-  console.log('user connected');
   socket.on('createBoard', data => {
-    
+    console.log('criada!');
   });  
 });
 
