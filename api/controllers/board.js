@@ -1,12 +1,12 @@
 const five = require('johnny-five'),
-      boards = require('../collections/board').boards,
+      //collection = five.collection,
+      board = require('../collections/board').board,
       io = require('../../index.js');
 
 io.on('connection', socket => {
   console.log('user connected');
   socket.on('createBoard', data => {
-    const { _id } = data;
-    createBoard(boards, _id, '/dev/ttyUSB0', false, false, 30);
+    
   });  
 });
 
