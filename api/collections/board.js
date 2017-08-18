@@ -7,11 +7,11 @@ const five = require('johnny-five'),
       },
       board = new five.Board(port);
 
-board.on('ready', () => {
-  console.log('Board ready!');
+board.on('ready', function() {
+  console.log(`Board '${board.id}' ready`);
 });
 
-board.on('fail', event => {
+board.on('fail', function(event) {
   console.log(event.class, event.message);
 });
 

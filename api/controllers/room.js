@@ -3,19 +3,17 @@ const rooms = require('../collections/room').rooms,
       io = require('../../index.js');
 
 io.on('connection', socket => {
-  socket.on('createRoom', data => {
-    const { _id, description, components } = data.Room,
-            room = new Room(_id, description, components);
-    rooms.push(room);
+  socket.on('create:Room', data => {
+    const { _id, description, components } = data;
+    rooms.push(new Room(_id, description, components));
+    console.log(`${description} created!`);
   });
-  socket.on('updateRoom', data => {
-    const { id, description, components } = data,
-          room = rooms.filter(room => room.id === data.id);
-          room.id = id;
-          room.description = description;
-          room.components = components;
+  socket.on('update:Room', data => {
+    const { _id, description, components } = data;
+    let filteredRoom = rooms.filter(room => room.id === _id);
+          filteredRoom = { description, components };
   });
-  socket.on('deleteRoom', id => {
+  socket.on('delete:Room', id => {
     const index = rooms.map(room => room.id === id);
     rooms.splice(index, 1);
   });
