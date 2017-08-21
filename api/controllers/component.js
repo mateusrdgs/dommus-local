@@ -58,8 +58,8 @@ io.on('connection', socket => {
     socket.emit('get:Component', components.filter(component => component.id === _id));
   });
 
-  socket.on('getAll:Component', data => {
-    socket.emit('getAll:Component', components);
+  socket.on('get:Components', data => {
+    socket.emit('get:Components', true);
   });
 
 });

@@ -1,20 +1,37 @@
 const five = require('johnny-five'),
-      port = {
-        id: 'Mega',
-        port: '/dev/ttyUSB0',
+      Etherport = require('etherport');
+      /*ports = [{
+        id: "UNO",
+        port: new Etherport(55006),
         repl: false,
         debug: false
-      },
-      board = new five.Board(port);
+      }, {
+        id: "MEGA",
+        port: new Etherport(55007),
+        repl: false,
+        debug: false
+        }],
+      boards = new five.Boards(ports);*/
+let boards;
 
-board.on('ready', function() {
-  console.log(`Board '${board.id}' ready`);
+/*
+boards.on('ready', function() {
+  console.log(`Boards ready`);
 });
+
 
 board.on('fail', function(event) {
   console.log(event.class, event.message);
 });
 
+setTimeout(() => {
+  board = new five.Board(port);
+  board.on('ready', function() {
+    console.log(`Board '${board.id}' ready`);
+  });
+}, 10000);
+*/
+
 module.exports = {
-  board
+  boards
 }
