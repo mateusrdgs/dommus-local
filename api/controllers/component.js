@@ -59,9 +59,16 @@ io.on('connection', socket => {
   });
 
   socket.on('get:Components', data => {
-    socket.emit('get:Components', true);
+    if(components.length) {
+      const filteredComponents = [];
+      components.forEach(comp => {
+        const { id, pin, isOn, board } = comp,
+              boardId = board.id;
+        filteredComponents.push({ id, pin, boardId, isOn });
+      });
+      socket.emit('get:Components', filteredComponents);
+    }
   });
-
 });
 
 function registerListener(socket, component) {
