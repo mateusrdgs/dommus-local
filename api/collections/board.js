@@ -1,7 +1,7 @@
 const five = require('johnny-five'),
       Etherport = require('etherport'),
       ports = [{
-        id: "UNO",
+        id: "599ac4ed073e7f125a14783a",
         port: "/dev/ttyUSB0",
         repl: false,
         debug: false
@@ -18,6 +18,7 @@ const five = require('johnny-five'),
         debug: false
         }],*/
       boards = new five.Boards(ports);
+
 /*
 
 let boards;

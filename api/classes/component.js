@@ -1,15 +1,17 @@
 const five = require('johnny-five'),
+      boards = require('../collections/board').boards,
       Led = five.Led,
       Thermometer = five.Thermometer,
       Motion = five.Motion,
       Sensor = five.Sensor,
       Servo = five.Servo;
 
-
-function createLed(id, pin) {
+function createLed(id, pin, idBoard) {
+  const board = getBoardById(boards, idBoard);
   return new Led({
     id,
-    pin
+    pin,
+    board
   });
 }
 
@@ -48,6 +50,10 @@ function createServo(id, pin, minRange, maxRange) {
     range,
     startAt
   })
+}
+
+function getBoardById(boards, idBoard) {
+  return Array.prototype.filter.call(boards, board => board.id === idBoard)[0];
 }
 
 module.exports = {
