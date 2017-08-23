@@ -7,7 +7,7 @@ const express = require('express'),
       port = 4000,
       server = require('http').createServer(app),
       io = require('socket.io')().listen(server),
-      sync = require('./api/helpers/sync').sync;
+      sync = require('./api/shared/sync');
 
 let isSync = false;
 
@@ -24,10 +24,8 @@ io.on('connection', socket => {
     console.log('User disconnected');
   });
   if(!isSync) {
-    socket.emit('app:Sync', isSync);
-    socket.on('app:Sync', data => {
-      console.log(data);
-    });
+    socket.emit('app:Sync', sync(socket));
+    isSync = !isSync;
   }
 });
 
