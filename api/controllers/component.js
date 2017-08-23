@@ -1,8 +1,6 @@
 const io = require('../../index.js'),
-      component = require('../classes/component'),
-      components = require('../collections/component'),
-      createComponent = require('../shared/creator').createComponent,
-      registerListener = require('../shared/register').registerListener;
+      createComponent = require('../shared/componentCreator'),
+      components = require('../collections/component');
 
 io.on('connection', socket => {
   socket.on('create:Component', data => {

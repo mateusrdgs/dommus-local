@@ -41,6 +41,4 @@ setTimeout(() => {
 
 */
 
-module.exports = {
-  boards
-}
+module.exports = boards;

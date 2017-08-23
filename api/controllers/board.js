@@ -2,7 +2,7 @@ const five = require('johnny-five'),
 Etherport = require('etherport'),
 io = require('../../index.js');
 
-let boards = require('../collections/board').boards;
+let boards = require('../collections/board');
 
 io.on('connection', socket => {
   socket.on('create:Board', data => {
