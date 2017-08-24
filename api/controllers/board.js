@@ -1,6 +1,6 @@
 const five = require('johnny-five'),
-Etherport = require('etherport'),
-io = require('../../index.js');
+      Etherport = require('etherport'),
+      io = require('../../index.js');
 
 let boards = require('../collections/board');
 

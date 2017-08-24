@@ -1,4 +1,4 @@
-const five = require('johnny-five'),
+/*const five = require('johnny-five'),
       Etherport = require('etherport'),
       ports = [{
         id: "599ac4ed073e7f125a14783a",
@@ -6,7 +6,7 @@ const five = require('johnny-five'),
         repl: false,
         debug: false
       }],
-      /*ports = [{
+      ports = [{
         id: "UNO",
         port: new Etherport(55006),
         repl: false,
@@ -16,8 +16,10 @@ const five = require('johnny-five'),
         port: new Etherport(55007),
         repl: false,
         debug: false
-        }],*/
-      boards = new five.Boards(ports);
+        }],
+      boards = new five.Boards(ports);*/
+
+let boards;
 
 /*
 
