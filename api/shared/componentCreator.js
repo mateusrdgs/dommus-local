@@ -1,5 +1,4 @@
 const five = require('johnny-five'),
-      boards = require('../collections/board'),
       Led = five.Led,
       Thermometer = five.Thermometer,
       Motion = five.Motion,
@@ -7,29 +6,29 @@ const five = require('johnny-five'),
       Servo = five.Servo,
       registerListener = require('../shared/register');
 
-function createComponent(socket, data) {
+function createComponent(socket, data, boards) {
   const { type } = data;
   switch (type) {
     case 1: { // LED
-      return createLed(data);
+      return createLed(data, boards);
     }
     case 2: { // THERMOMETHER
-      const thermomether = createThermomether(data);
+      const thermomether = createThermomether(data, boards);
       registerListener(socket, thermomether);
       return thermomether;
     }
     case 3: { // MOTION
-      const motion = createMotion(data);
+      const motion = createMotion(data, boards);
       registerListener(socket, motion);
       return motion;
     }
     case 4: { // SENSOR
-      const sensor = createSensor(data);
+      const sensor = createSensor(data, boards);
       registerListener(socket, sensor);
       return sensor;
     }
     case 5: { // SERVO
-      return createServo(data);
+      return createServo(data, boards);
     }
     default: {
       return false;
@@ -37,50 +36,64 @@ function createComponent(socket, data) {
   }
 }
 
-function createLed(id, pin, idBoard) {
+function createLed(data, boards) {
+  const { _id, digitalPin, idBoard } = data;
   const board = getBoardById(boards, idBoard);
   return new Led({
-    id,
-    pin,
+    id: _id,
+    pin: digitalPin,
     board
   });
 }
 
-function createThermomether(id, controller, pin, freq) {
+function createThermomether(data, boards) {
+  const { _id, controller, analogPin, freq, idBoard } = data,
+        board = getBoardById(boards, idBoard);
   return new Thermometer({
-    id,
+    id: _id,
     controller,
-    pin,
-    freq
+    pin: analogPin,
+    freq,
+    board
   });
 }
 
-function createMotion(id, controller, pin) {
+function createMotion(data, boards) {
+  const { _id, controller, analogPin, idBoard } = data,
+        board = getBoardById(boards, idBoard);
   return new Motion({
-    id,
+    id: _id,
     controller,
-    pin
+    pin: analogPin,
+    board
   });
 }
 
-function createSensor(id, pin, threshold, freq) {
+function createSensor(data, boards) {
+  const { _id, controller, analogPin, threshold, freq, idBoard } = data,
+        board = getBoardById(boards, idBoard);
   return new Sensor({
-    id,
-    pin,
+    id: _id,
+    pin: analogPin,
+    controller,
     threshold,
-    freq
+    freq,
+    board
   });
 }
 
-function createServo(id, pin, minRange, maxRange) {
-  const startAt = 0,
-        range = [minRange, maxRange];
+function createServo(data, boards) {
+  const { _id, digitalPin, minRange, maxRange, idBoard } = data,
+        startAt = 0,
+        range = [minRange, maxRange],
+        board = getBoardById(boards, idBoard);
   return new Servo({
-    id,
-    pin,
+    id: _id,
+    pin: digitalPin,
+    startAt,
     range,
-    startAt
-  })
+    board
+  });
 }
 
 function getBoardById(boards, idBoard) {

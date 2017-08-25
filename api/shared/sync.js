@@ -1,4 +1,6 @@
-const Components = require('../collections/component'),
+const SyncEmitter = require('./events').SyncEmitter,
+      syncEmitter = new SyncEmitter(),
+      Components = require('../collections/component'),
       createComponent = require('../shared/componentCreator'),
       createBoard = require('../shared/boardCreator');
 
@@ -7,43 +9,31 @@ let Boards = require('../collections/board');
 function sync(socket) {
   return function(data) {
     const { boards, rooms } = data;
-    createBoards(boards);
-    if(isBoardsReady(Boards)) {
-      createComponents(socket, rooms);
-    }
+    createBoardsAndComponents(socket, boards, rooms);
   }
 }
 
-function createBoards(boards) {
+function createBoardsAndComponents(socket, boards, rooms) {
   if(boards) {
     Boards = createBoard(boards);
+    Boards.on('ready', () => {
+      createComponents(socket, rooms, Boards);
+    });
   }
 }
 
-function createComponents(socket, rooms) {
+function createComponents(socket, rooms, boards) {
   rooms.forEach(room => {
-    setTimeout(() => {
-      const roomComponents = room.components;
-      roomComponents.forEach(component => {
-        const newComponent = createComponent(socket, component);
-        Components.push(newComponent);
-      });
-    }, 5000);
+    const roomComponents = room .components;
+    roomComponents.forEach(component => {
+      const newComponent = createComponent(socket, component, boards);
+      Components.push(newComponent);
+    });
   });
+  syncEmitter.emit('finished:Sync');
 }
 
-function isBoardsReady(boards) {
-  const isReady = Array.prototype.every.call(boards, board => {
-    return board.isReady;
-  });
-  if(!isReady) {
-    setTimeout(() => {
-      isBoardsReady(boards);
-    }, 3000);
-  }
-  else {
-    return isReady;
-  }
-}
-
-module.exports = sync;
+module.exports = { 
+  sync,
+  syncEmitter
+};
