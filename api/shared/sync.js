@@ -1,35 +1,49 @@
 const SyncEmitter = require('./events').SyncEmitter,
       syncEmitter = new SyncEmitter(),
-      Components = require('../collections/component'),
       createComponent = require('../shared/componentCreator'),
       createBoard = require('../shared/boardCreator');
 
-let Boards = require('../collections/board');
+let BoardsCollection = require('../collections/board'),
+    ComponentsCollection = require('../collections/component');
 
 function sync(socket) {
   return function(data) {
-    const { boards, rooms } = data;
-    createBoardsAndComponents(socket, boards, rooms);
+    if(data) {
+      const { boards, rooms } = data;
+      if(boards && rooms) {
+        createBoardsAndComponents(socket, boards, rooms);
+      }
+      else {
+        console.log('Nothing to sync...');
+      }
+    }
   }
 }
 
 function createBoardsAndComponents(socket, boards, rooms) {
-  if(boards) {
-    Boards = createBoard(boards);
-    Boards.on('ready', () => {
-      createComponents(socket, rooms, Boards);
+  if(boards.length) {
+    console.log('Started system synchronization...');
+    BoardsCollection = createBoard(boards);
+    BoardsCollection.on('ready', () => {
+      console.log('Finished boards synchronization...');
+      createComponents(socket, rooms, BoardsCollection);
     });
   }
 }
 
 function createComponents(socket, rooms, boards) {
-  rooms.forEach(room => {
-    const roomComponents = room .components;
-    roomComponents.forEach(component => {
-      const newComponent = createComponent(socket, component, boards);
-      Components.push(newComponent);
+  if(rooms.length) {
+    rooms.forEach(room => {
+      const roomComponents = room .components;
+      if(roomComponents.length) {
+        roomComponents.forEach(component => {
+          const newComponent = createComponent(socket, component, boards);
+          ComponentsCollection.push(newComponent);
+        });
+      }
     });
-  });
+  }
+  console.log('Finished components synchronization...');
   syncEmitter.emit('finished:Sync');
 }
 

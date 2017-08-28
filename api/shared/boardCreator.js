@@ -1,19 +1,20 @@
 const five = require('johnny-five'),
+      Etherport = require('etherport'),
       Board = five.Board,
-      Boards = five.Boards,
-      Etherport = require('etherport');
+      Boards = five.Boards;
 
+let BoardsCollection = require('../collections/board');
 
 function createBoard(data) {
-  return data.length <=1 ? createSingleBoard(data[0]) : createArrayBoard(data);
+  BoardsCollection = data.length <=1 ? createSingleBoard(data[0]) : createArrayBoard(data);
+  return BoardsCollection;
 }
 
 function createSingleBoard(board) {
-  const { _id } = board,
-        port = '/dev/ttyUSB0';
+  const { _id, port } = board;
   return new Board({
     id: _id,
-    port,
+    port: new Etherport(port),
     repl: false,
     debug: false
   });
@@ -29,11 +30,9 @@ function createArrayBoard(boards, board) {
   }
   else { // When on boards collection has more then one board
     Array.prototype.forEach.call(boards, board => {
-      const id = board.id, port = extractPortValue(board.port);
+      const id = board._id, port = extractPortValue(board.port);
       addToPorts(ports, id, port, false, false); //Oldest boards
     });
-    const newId = boards.id, newPort = extractPortValue(boards.port);
-    addToPorts(ports, newId, newPort, false, false); // Newest board
   }
   return new Boards(ports);
 }
@@ -44,7 +43,7 @@ function addToPorts(ports, id, port, repl, debug) {
 
 
 function extractPortValue(port) {
-  const splitted = port.split(' ');
+  const splitted = port.toString().split(' ');
   return parseInt(splitted[splitted.length - 1]);
 }
 

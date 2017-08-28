@@ -24,32 +24,21 @@ function createBoard(boards, newId, newPort) {
   else {
     const ports = [];
     if(!boards.length) {
-      //const { id, repl, debug } = boards;
-      const id = boards.id,
-            repl = boards.repl,
-            debug = boards.debug;
-      //let { port } = boards;
-      let port = boards.port;
-      port = extractPortValue(port);
-      addToPorts(ports, id, port, repl, debug);
       addToPorts(ports, newId, newPort, false, false);
       return new five.Boards(ports);
     }
-    else {
-      const ports = [];
+    /*else {
       Array.prototype.forEach.call(boards, board => {
-        //const { id, repl, debug } = boards;
         const id = board.id,
               repl = board.repl,
               debug = board.debug;
-        //let { port } = boards;
         let port = board.port;
         port = extractPortValue(port);
         addToPorts(ports, id, port, repl, debug);
       });
       addToPorts(ports, newId, newPort, false, false);
       return new five.Boards(ports);
-    }
+    }*/
   }
 }
 
@@ -61,4 +50,8 @@ function extractPortValue(port) {
   const splitted = port.split(' '),
   length = splitted.length;
   return parseInt(splitted[length - 1]);
+}
+
+function updateCollection(board, boards) {
+  boards.prototype.add(board);
 }

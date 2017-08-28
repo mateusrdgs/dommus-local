@@ -9,7 +9,8 @@ const express = require('express'),
       sync = require('./api/shared/sync').sync,
       syncEmitter = require('./api/shared/sync').syncEmitter;
 
-let isSync = false;
+let isSync = false,
+    startedSync = false;
 
 app.use(helmet());
 app.use(morgan('dev'));
@@ -23,11 +24,12 @@ io.on('connection', socket => {
   socket.on('disconnect', () => {
     console.log('User disconnected');
   });
-  if(!isSync) {
+  if(!isSync && !startedSync) {
+    startedSync = !startedSync;
     socket.emit('app:Sync', sync(socket));
     syncEmitter.on('finished:Sync', () => {
       isSync = !isSync;
-      console.log(isSync);
+      console.log('Finished system synchronization');
     });
   }
 });

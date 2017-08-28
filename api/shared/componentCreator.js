@@ -37,40 +37,44 @@ function createComponent(socket, data, boards) {
 }
 
 function createLed(data, boards) {
-  const { _id, digitalPin, idBoard } = data;
+  const { _id, digitalPin, idBoard, type, description } = data;
   const board = getBoardById(boards, idBoard);
+  console.log('component created!');
   return new Led({
     id: _id,
     pin: digitalPin,
-    board
+    board,
+    custom: { type, description }
   });
 }
 
 function createThermomether(data, boards) {
-  const { _id, controller, analogPin, freq, idBoard } = data,
+  const { _id, controller, analogPin, freq, idBoard, type, description } = data,
         board = getBoardById(boards, idBoard);
   return new Thermometer({
     id: _id,
     controller,
     pin: analogPin,
     freq,
-    board
+    board,
+    custom: { type, description }
   });
 }
 
 function createMotion(data, boards) {
-  const { _id, controller, analogPin, idBoard } = data,
+  const { _id, controller, analogPin, idBoard, type, description } = data,
         board = getBoardById(boards, idBoard);
   return new Motion({
     id: _id,
     controller,
     pin: analogPin,
-    board
+    board,
+    custom: { type, description }
   });
 }
 
 function createSensor(data, boards) {
-  const { _id, controller, analogPin, threshold, freq, idBoard } = data,
+  const { _id, controller, analogPin, threshold, freq, idBoard, type, description } = data,
         board = getBoardById(boards, idBoard);
   return new Sensor({
     id: _id,
@@ -78,12 +82,13 @@ function createSensor(data, boards) {
     controller,
     threshold,
     freq,
-    board
+    board,
+    custom: { type, description }
   });
 }
 
 function createServo(data, boards) {
-  const { _id, digitalPin, minRange, maxRange, idBoard } = data,
+  const { _id, digitalPin, minRange, maxRange, idBoard, type, description } = data,
         startAt = 0,
         range = [minRange, maxRange],
         board = getBoardById(boards, idBoard);
@@ -92,7 +97,8 @@ function createServo(data, boards) {
     pin: digitalPin,
     startAt,
     range,
-    board
+    board,
+    custom: { type, description }
   });
 }
 
