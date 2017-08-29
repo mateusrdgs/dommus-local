@@ -23,7 +23,7 @@ function sync(socket) {
 function createBoardsAndComponents(socket, boards, rooms) {
   if(boards.length) {
     console.log('Started system synchronization...');
-    BoardsCollection = createBoard(boards);
+    BoardsCollection = createBoard(true, boards);
     BoardsCollection.on('ready', () => {
       console.log('Finished boards synchronization...');
       createComponents(socket, rooms, BoardsCollection);
