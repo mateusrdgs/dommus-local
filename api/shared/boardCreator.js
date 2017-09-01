@@ -17,7 +17,7 @@ function extractAndReturn(isSync, boards, data) {
     if(boards.length) {
       iterateOverBoards(boards, configs);
     }
-    const { _id, port, description } = data;
+    const { _id, port, description } = data[0];
     addToConfig(configs, _id, description, port, false, false);
   }
   return returnBoards(configs);

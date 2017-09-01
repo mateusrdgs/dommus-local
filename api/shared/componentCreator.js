@@ -7,7 +7,8 @@ const five = require('johnny-five'),
       registerListener = require('../shared/register');
 
 function createComponent(socket, data, boards) {
-  const { type } = data;
+  let { type } = data;
+  type = parseInt(type);
   switch (type) {
     case 1: { // LED
       return createLed(data, boards);
@@ -49,13 +50,13 @@ function createLed(data, boards) {
 }
 
 function createThermomether(data, boards) {
-  const { _id, controller, analogPin, freq, idBoard, type, description } = data,
+  const { _id, controller, analogPin, frequency, idBoard, type, description } = data,
         board = getBoardById(boards, idBoard);
   return new Thermometer({
     id: _id,
     controller,
     pin: analogPin,
-    freq,
+    frequency,
     board,
     custom: { type, description }
   });
@@ -74,14 +75,14 @@ function createMotion(data, boards) {
 }
 
 function createSensor(data, boards) {
-  const { _id, controller, analogPin, threshold, freq, idBoard, type, description } = data,
+  const { _id, controller, analogPin, threshold, frequency, idBoard, type, description } = data,
         board = getBoardById(boards, idBoard);
   return new Sensor({
     id: _id,
     pin: analogPin,
     controller,
     threshold,
-    freq,
+    frequency,
     board,
     custom: { type, description }
   });

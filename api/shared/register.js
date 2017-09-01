@@ -4,6 +4,4 @@ function registerListener(socket, component) {
   });
 }
 
-module.exports = {
-  registerListener
-}
+module.exports = registerListener;
