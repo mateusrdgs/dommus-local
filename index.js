@@ -5,12 +5,15 @@ const express = require('express'),
       morgan = require('morgan'),
       port = 4000,
       server = require('http').createServer(app),
-      io = require('socket.io')().listen(server),
-      sync = require('./api/shared/sync').sync,
-      syncEmitter = require('./api/shared/sync').syncEmitter;
+      io = require('socket.io')().listen(server);
 
 let isSync = false,
     startedSync = false;
+
+module.exports = {
+  io,
+  startedSync
+};
 
 app.use(helmet());
 app.use(morgan('dev'));
@@ -25,15 +28,20 @@ io.on('connection', socket => {
     console.log('User disconnected');
   });
   if(!isSync && !startedSync) {
-    startedSync = !startedSync;
+    startedSyncEmitter.on('started:Sync', () => {
+      startedSync = true;
+      console.log('Started system synchronization...');
+    });
     socket.emit('app:Sync', sync(socket));
-    syncEmitter.on('finished:Sync', () => {
+    finishedSyncEmitter.on('finished:Sync', () => {
       isSync = !isSync;
       console.log('Finished system synchronization');
     });
   }
 });
 
-module.exports = io;
-
 require('./api/index');
+
+const startedSyncEmitter = require('./api/shared/sync').startedSyncEmitter,
+      finishedSyncEmitter = require('./api/shared/sync').finishedSyncEmitter,
+      sync = require('./api/shared/sync').sync;

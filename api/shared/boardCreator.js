@@ -13,6 +13,9 @@ function extractAndReturn(isSync, boards, data) {
   if(isSync && boards.length) {
     iterateOverBoards(boards, configs);
   }
+  else if(isSync && data.length) {
+    iterateOverBoards(data, configs);
+  }
   else {
     if(boards.length) {
       iterateOverBoards(boards, configs);
@@ -25,16 +28,17 @@ function extractAndReturn(isSync, boards, data) {
 
 function iterateOverBoards(boards, configs) {
   Array.prototype.forEach.call(boards, board => {
-    const { _id, repl, debug, custom } = board;
-    const { description } = custom;
+    const { _id, repl, debug, description } = board;
+    //const { description } = custom;
     let { port } = board;
     //port = extractPortValue(port);
+    port = returnEtherport(port);
     addToConfig(configs, _id, description, port, repl, debug);
   });
 }
 
 function addToConfig(configs, id, description, port, repl, debug) {
-  configs.push({ id, port: '/dev/ttyUSB0', repl, debug, custom: { description } });
+  configs.push({ id, port, repl, debug, custom: { description },  timeout: 1e5 });
 }
 
 function returnBoards(configs) {
@@ -45,6 +49,10 @@ function extractPortValue(port) {
   const splitted = port.split(' '),
   length = splitted.length;
   return parseInt(splitted[length - 1]);
+}
+
+function returnEtherport(port) {
+  return new Etherport(port);
 }
 
 module.exports = createBoard;

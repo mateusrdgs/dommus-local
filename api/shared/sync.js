@@ -1,14 +1,16 @@
 const SyncEmitter = require('./events').SyncEmitter,
-      syncEmitter = new SyncEmitter(),
+      startedSyncEmitter = new SyncEmitter(),
+      finishedSyncEmitter = new SyncEmitter(),
       createComponent = require('../shared/componentCreator'),
       createBoard = require('../shared/boardCreator');
 
-let BoardsCollection = require('../collections/board'),
+let startedSync = require('../../index').startedSync,
+    BoardsCollection = require('../collections/board'),
     ComponentsCollection = require('../collections/component');
 
 function sync(socket) {
   return function(data) {
-    if(data) {
+    if(data && !startedSync) {
       const { boards, rooms } = data;
       if(boards && rooms) {
         createBoardsAndComponents(socket, boards, rooms);
@@ -22,7 +24,7 @@ function sync(socket) {
 
 function createBoardsAndComponents(socket, boards, rooms) {
   if(boards.length) {
-    console.log('Started system synchronization...');
+    startedSyncEmitter.emit('started:Sync');
     BoardsCollection = createBoard(true, boards);
     BoardsCollection.on('ready', () => {
       console.log('Finished boards synchronization...');
@@ -44,10 +46,11 @@ function createComponents(socket, rooms, boards) {
     });
   }
   console.log('Finished components synchronization...');
-  syncEmitter.emit('finished:Sync');
+  finishedSyncEmitter.emit('finished:Sync');
 }
 
 module.exports = { 
   sync,
-  syncEmitter
+  startedSyncEmitter,
+  finishedSyncEmitter
 };
