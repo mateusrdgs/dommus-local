@@ -1,12 +1,13 @@
 const five = require('johnny-five'),
       Led = five.Led,
       Thermometer = five.Thermometer,
+      Light = five.Light,
       Motion = five.Motion,
       Sensor = five.Sensor,
       Servo = five.Servo,
       registerListener = require('../shared/register');
 
-function createComponent(socket, data, boards) {
+function createComponent(io, data, boards) {
   let { type } = data;
   type = parseInt(type);
   switch (type) {
@@ -15,20 +16,25 @@ function createComponent(socket, data, boards) {
     }
     case 2: { // THERMOMETHER
       const thermomether = createThermomether(data, boards);
-      registerListener(socket, thermomether);
+      registerListener(io, thermomether);
       return thermomether;
     }
-    case 3: { // MOTION
+    case 3: { // LIGHT
+      const light = createLight(data, boards);
+      registerListener(io, light);
+      return light;
+    }
+    case 4: { // MOTION
       const motion = createMotion(data, boards);
-      registerListener(socket, motion);
+      registerListener(io, motion);
       return motion;
     }
-    case 4: { // SENSOR
+    case 5: { // SENSOR
       const sensor = createSensor(data, boards);
-      registerListener(socket, sensor);
+      registerListener(io, sensor);
       return sensor;
     }
-    case 5: { // SERVO
+    case 6: { // SERVO
       return createServo(data, boards);
     }
     default: {
@@ -56,7 +62,20 @@ function createThermomether(data, boards) {
     id: _id,
     controller,
     pin: analogPin,
-    frequency,
+    freq: frequency,
+    board,
+    custom: { type, description }
+  });
+}
+
+function createLight(data, boards) {
+  const { _id, controller, analogPin, frequency, threshold, idBoard, type, description } = data,
+        board = getBoardById(boards, idBoard);
+  return new Light({
+    id: _id,
+    pin: analogPin,
+    freq: frequency,
+    threshold,
     board,
     custom: { type, description }
   });
@@ -82,7 +101,7 @@ function createSensor(data, boards) {
     pin: analogPin,
     controller,
     threshold,
-    frequency,
+    freq: frequency,
     board,
     custom: { type, description }
   });

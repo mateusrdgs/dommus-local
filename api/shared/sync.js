@@ -8,12 +8,12 @@ let startedSync = require('../../index').startedSync,
     BoardsCollection = require('../collections/board'),
     ComponentsCollection = require('../collections/component');
 
-function sync(socket) {
+function sync(io) {
   return function(data) {
     if(data && !startedSync) {
       const { boards, rooms } = data;
       if(boards && rooms) {
-        createBoardsAndComponents(socket, boards, rooms);
+        createBoardsAndComponents(io, boards, rooms);
       }
       else {
         console.log('Nothing to sync...');
@@ -22,24 +22,24 @@ function sync(socket) {
   }
 }
 
-function createBoardsAndComponents(socket, boards, rooms) {
+function createBoardsAndComponents(io, boards, rooms) {
   if(boards.length) {
     startedSyncEmitter.emit('started:Sync');
     BoardsCollection = createBoard(true, boards);
     BoardsCollection.on('ready', () => {
       console.log('Finished boards synchronization...');
-      createComponents(socket, rooms, BoardsCollection);
+      createComponents(io, rooms, BoardsCollection);
     });
   }
 }
 
-function createComponents(socket, rooms, boards) {
+function createComponents(io, rooms, boards) {
   if(rooms.length) {
     rooms.forEach(room => {
       const roomComponents = room .components;
       if(roomComponents.length) {
         roomComponents.forEach(component => {
-          const newComponent = createComponent(socket, component, boards);
+          const newComponent = createComponent(io, component, boards);
           ComponentsCollection.push(newComponent);
         });
       }

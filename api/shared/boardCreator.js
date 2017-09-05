@@ -31,14 +31,14 @@ function iterateOverBoards(boards, configs) {
     const { _id, repl, debug, description } = board;
     //const { description } = custom;
     let { port } = board;
-    //port = extractPortValue(port);
-    port = returnEtherport(port);
+    /*port = extractPortValue(port);
+    port = returnEtherport(port);*/
     addToConfig(configs, _id, description, port, repl, debug);
   });
 }
 
 function addToConfig(configs, id, description, port, repl, debug) {
-  configs.push({ id, port, repl, debug, custom: { description },  timeout: 1e5 });
+  configs.push({ id, port: '/dev/ttyUSB0', repl, debug, custom: { description },  timeout: 1e5 });
 }
 
 function returnBoards(configs) {

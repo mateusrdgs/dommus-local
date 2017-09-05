@@ -32,7 +32,7 @@ io.on('connection', socket => {
       startedSync = true;
       console.log('Started system synchronization...');
     });
-    socket.emit('app:Sync', sync(socket));
+    socket.emit('app:Sync', sync(io));
     finishedSyncEmitter.on('finished:Sync', () => {
       isSync = !isSync;
       console.log('Finished system synchronization');
