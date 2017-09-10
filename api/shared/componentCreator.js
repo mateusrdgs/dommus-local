@@ -12,7 +12,8 @@ function createComponent(io, data, boards) {
   type = parseInt(type);
   switch (type) {
     case 1: { // LED
-      return createLed(data, boards);
+      const led = createLed(data, boards);
+      return led;
     }
     case 2: { // THERMOMETHER
       const thermomether = createThermomether(data, boards);
@@ -35,7 +36,8 @@ function createComponent(io, data, boards) {
       return sensor;
     }
     case 6: { // SERVO
-      return createServo(data, boards);
+      const servo = createServo(data, boards);
+      return servo;
     }
     default: {
       return false;
@@ -51,66 +53,63 @@ function createLed(data, boards) {
     id: _id,
     pin: digitalPin,
     board,
-    custom: { type, description }
+    custom: { type: parseInt(type), description }
   });
 }
 
 function createThermomether(data, boards) {
-  const { _id, controller, analogPin, frequency, idBoard, type, description } = data,
+  const { _id, analogPin, frequency, idBoard, type, description } = data,
         board = getBoardById(boards, idBoard);
   return new Thermometer({
     id: _id,
-    controller,
-    pin: analogPin,
+    pin: `A${analogPin}`,
     freq: frequency,
+    controller: 'LM35',
     board,
-    custom: { type, description }
+    custom: { type: parseInt(type), description }
   });
 }
 
 function createLight(data, boards) {
-  const { _id, controller, analogPin, frequency, threshold, idBoard, type, description } = data,
+  const { _id, analogPin, frequency, threshold, idBoard, type, description } = data,
         board = getBoardById(boards, idBoard);
   return new Light({
     id: _id,
-    pin: analogPin,
+    pin: `A${analogPin}`,
     freq: frequency,
+    controller: "DEFAULT",
     threshold,
     board,
-    custom: { type, description }
+    custom: { type: parseInt(type), description }
   });
 }
 
 function createMotion(data, boards) {
-  const { _id, controller, analogPin, idBoard, type, description } = data,
+  const { _id, digitalPin, idBoard, type, description } = data,
         board = getBoardById(boards, idBoard);
   return new Motion({
     id: _id,
-    controller,
-    pin: analogPin,
+    pin: digitalPin,
     board,
-    custom: { type, description }
+    custom: { type: parseInt(type), description }
   });
 }
 
 function createSensor(data, boards) {
-  const { _id, controller, analogPin, threshold, frequency, idBoard, type, description } = data,
+  const { _id, analogPin, threshold, frequency, idBoard, type, description } = data,
         board = getBoardById(boards, idBoard);
   return new Sensor({
     id: _id,
-    pin: analogPin,
-    controller,
+    pin: `A${analogPin}`,
     threshold,
     freq: frequency,
     board,
-    custom: { type, description }
+    custom: { type: parseInt(type), description }
   });
 }
 
 function createServo(data, boards) {
-  const { _id, digitalPin, minRange, maxRange, idBoard, type, description } = data,
-        startAt = 0,
-        range = [minRange, maxRange],
+  const { _id, digitalPin, range, idBoard, startAt, type, description, rotation } = data,
         board = getBoardById(boards, idBoard);
   return new Servo({
     id: _id,
@@ -118,7 +117,7 @@ function createServo(data, boards) {
     startAt,
     range,
     board,
-    custom: { type, description }
+    custom: { type: parseInt(type), description, rotation }
   });
 }
 

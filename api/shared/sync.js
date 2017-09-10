@@ -25,8 +25,9 @@ function sync(io) {
 function createBoardsAndComponents(io, boards, rooms) {
   if(boards.length) {
     startedSyncEmitter.emit('started:Sync');
-    BoardsCollection = createBoard(true, boards);
-    BoardsCollection.on('ready', () => {
+    createBoard(true, boards);
+    const boardsLength = BoardsCollection.length;
+    BoardsCollection[boardsLength - 1].on('ready', () => {
       console.log('Finished boards synchronization...');
       createComponents(io, rooms, BoardsCollection);
     });
