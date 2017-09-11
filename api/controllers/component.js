@@ -7,13 +7,14 @@ const io = require('../../index.js').io,
       Motion = five.Motion,
       Servo = five.Servo,
       createComponent = require('../shared/componentCreator'),
-      _Components = require('../collections/component');
-
-let Boards = require('../collections/board');
+      _Components = require('../collections/component'),
+      _Boards = require('../collections/board');
 
 io.on('connection', socket => {
   socket.on('create:Component', data => {
-    const newComponent = createComponent(socket, data, Boards);
+    const { idBoard } = data,
+          filteredBoard = filterBoardById(_Boards, idBoard),
+          newComponent = createComponent(socket, data, filteredBoard);
     addComponentToCollection(_Components, newComponent);
     socket.emit('create:Component', !!newComponent || false);
   });
@@ -29,7 +30,7 @@ io.on('connection', socket => {
   
   socket.on('updateState:Component', data => {
     if(data)
-      updateStateComponent(io, _Components, data);
+      updateComponentState(io, _Components, data);
   });
   
 });
@@ -97,7 +98,7 @@ function returnComponents(socket, components) {
   }
 }
 
-function updateStateComponent(io, components, data) {
+function updateComponentState(io, components, data) {
   const { id } = data,
         component = components.filter(component => component.id === id)[0];
   switch(component.constructor) {
@@ -119,4 +120,9 @@ function updateStateComponent(io, components, data) {
     }
   }
   io.emit('updateState:Component', data);
+}
+
+
+function filterBoardById(_Boards, id) {
+  return _Boards.filter(_board => _board.id === id)[0];
 }
