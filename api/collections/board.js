@@ -1,4 +1,3 @@
-const five = require('johnny-five'),
-      boards = new five.Boards([]);
+const _Boards = [];
 
-module.exports = boards;
+module.exports = _Boards;

@@ -36,7 +36,6 @@ function registerDataListener(io, component) {
       case Sensor: {
         const { id, value } = this;
         const newLevel = Fn.map(value, 0, 1023, 100, 0);
-        //console.log(this.scaleTo([0, 100]));
         io.emit(`data:${id}`, { id, value: newLevel });
       }
         break;

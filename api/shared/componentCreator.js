@@ -7,36 +7,42 @@ const five = require('johnny-five'),
       Servo = five.Servo,
       registerListener = require('../shared/register');
 
-function createComponent(io, data, boards) {
+function createComponent(io, data, board) {
   let { type } = data;
   type = parseInt(type);
   switch (type) {
     case 1: { // LED
-      const led = createLed(data, boards);
+      const led = createLed(data, board);
+      console.log('Led created!');
       return led;
     }
-    case 2: { // THERMOMETHER
-      const thermomether = createThermomether(data, boards);
-      registerListener(io, thermomether);
-      return thermomether;
+    case 2: { // THERMOMETER
+      const thermometer = createThermometer(data, board);
+      registerListener(io, thermometer);
+      console.log('Thermometer created!');
+      return thermometer;
     }
     case 3: { // LIGHT
-      const light = createLight(data, boards);
+      const light = createLight(data, board);
       registerListener(io, light);
+      console.log('Light created!');
       return light;
     }
     case 4: { // MOTION
-      const motion = createMotion(data, boards);
+      const motion = createMotion(data, board);
       registerListener(io, motion);
+      console.log('Motion created!');
       return motion;
     }
     case 5: { // SENSOR
-      const sensor = createSensor(data, boards);
+      const sensor = createSensor(data, board);
       registerListener(io, sensor);
+      console.log('Sensor created!');
       return sensor;
     }
     case 6: { // SERVO
-      const servo = createServo(data, boards);
+      const servo = createServo(data, board);
+      console.log('Servo created!');
       return servo;
     }
     default: {
@@ -45,10 +51,8 @@ function createComponent(io, data, boards) {
   }
 }
 
-function createLed(data, boards) {
-  const { _id, digitalPin, idBoard, type, description } = data;
-  const board = getBoardById(boards, idBoard);
-  console.log('component created!');
+function createLed(data, board) {
+  const { _id, digitalPin, type, description } = data;
   return new Led({
     id: _id,
     pin: digitalPin,
@@ -57,9 +61,8 @@ function createLed(data, boards) {
   });
 }
 
-function createThermomether(data, boards) {
-  const { _id, analogPin, frequency, idBoard, type, description } = data,
-        board = getBoardById(boards, idBoard);
+function createThermometer(data, board) {
+  const { _id, analogPin, frequency, type, description } = data;
   return new Thermometer({
     id: _id,
     pin: `A${analogPin}`,
@@ -70,9 +73,8 @@ function createThermomether(data, boards) {
   });
 }
 
-function createLight(data, boards) {
-  const { _id, analogPin, frequency, threshold, idBoard, type, description } = data,
-        board = getBoardById(boards, idBoard);
+function createLight(data, board) {
+  const { _id, analogPin, frequency, threshold, type, description } = data;
   return new Light({
     id: _id,
     pin: `A${analogPin}`,
@@ -84,9 +86,8 @@ function createLight(data, boards) {
   });
 }
 
-function createMotion(data, boards) {
-  const { _id, digitalPin, idBoard, type, description } = data,
-        board = getBoardById(boards, idBoard);
+function createMotion(data, board) {
+  const { _id, digitalPin, type, description } = data;
   return new Motion({
     id: _id,
     pin: digitalPin,
@@ -95,9 +96,8 @@ function createMotion(data, boards) {
   });
 }
 
-function createSensor(data, boards) {
-  const { _id, analogPin, threshold, frequency, idBoard, type, description } = data,
-        board = getBoardById(boards, idBoard);
+function createSensor(data, board) {
+  const { _id, analogPin, threshold, frequency, type, description } = data;
   return new Sensor({
     id: _id,
     pin: `A${analogPin}`,
@@ -108,9 +108,8 @@ function createSensor(data, boards) {
   });
 }
 
-function createServo(data, boards) {
-  const { _id, digitalPin, range, idBoard, startAt, type, description, rotation } = data,
-        board = getBoardById(boards, idBoard);
+function createServo(data, board) {
+  const { _id, digitalPin, range, startAt, type, description, rotation } = data;
   return new Servo({
     id: _id,
     pin: digitalPin,
@@ -119,10 +118,6 @@ function createServo(data, boards) {
     board,
     custom: { type: parseInt(type), description, rotation }
   });
-}
-
-function getBoardById(boards, idBoard) {
-  return Array.prototype.filter.call(boards, board => board.id === idBoard)[0];
 }
 
 module.exports = createComponent;

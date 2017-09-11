@@ -1,3 +1,3 @@
-const components = [];
+const _Components = [];
 
-module.exports = components;
+module.exports = _Components;

@@ -3,6 +3,6 @@ const io = require('../../index').io,
 
 io.on('connection', socket => {
   socket.on('create:Board', data => {
-    boardCreator(false, data);
+    boardCreator(data);
   });
 });

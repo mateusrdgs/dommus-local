@@ -1,19 +1,19 @@
-const SyncEmitter = require('./events').SyncEmitter,
+const _Boards = require('../collections/board'),
+      _Components = require('../collections/component'),
+      SyncEmitter = require('./events').SyncEmitter,
       startedSyncEmitter = new SyncEmitter(),
       finishedSyncEmitter = new SyncEmitter(),
       createComponent = require('../shared/componentCreator'),
       createBoard = require('../shared/boardCreator');
 
-let startedSync = require('../../index').startedSync,
-    BoardsCollection = require('../collections/board'),
-    ComponentsCollection = require('../collections/component');
+let startedSync = require('../../index').startedSync;
 
 function sync(io) {
   return function(data) {
     if(data && !startedSync) {
       const { boards, rooms } = data;
       if(boards && rooms) {
-        createBoardsAndComponents(io, boards, rooms);
+        startSync(io, boards, rooms);
       }
       else {
         console.log('Nothing to sync...');
@@ -22,32 +22,66 @@ function sync(io) {
   }
 }
 
-function createBoardsAndComponents(io, boards, rooms) {
-  if(boards.length) {
+function startSync(io, dataBoards, dataRooms) {
+  if(Array.isArray(dataBoards)) {
     startedSyncEmitter.emit('started:Sync');
-    createBoard(true, boards);
-    const boardsLength = BoardsCollection.length;
-    BoardsCollection[boardsLength - 1].on('ready', () => {
-      console.log('Finished boards synchronization...');
-      createComponents(io, rooms, BoardsCollection);
+    createBoards(io, dataBoards, dataRooms);
+  }
+}
+
+function createBoards(io, dataBoards, dataRooms) {
+  dataBoards.forEach(dataBoard => {
+    createBoard(dataBoard);
+  });
+  iterateOverBoards(io, _Boards, _Components, dataRooms);
+}
+
+function iterateOverBoards(io, _Boards, _Components, dataRooms) {
+  _Boards.forEach(_board => {
+    _board.on('ready', () => {
+      if(Array.isArray(dataRooms)) {
+        iterateOverRooms(io, dataRooms, _Components, _board);
+      }
+    });
+  });
+}
+
+function iterateOverRooms(io, dataRooms, _Components, _board) {
+  if(Array.isArray(dataRooms)) {
+    dataRooms.forEach(dataRoom => {
+      const { id } = _board;
+      const extractedComponents = extractComponentsFromRoom(dataRoom, id);
+      iterateOverComponents(io, _Components, _board, extractedComponents);
     });
   }
 }
 
-function createComponents(io, rooms, boards) {
-  if(rooms.length) {
-    rooms.forEach(room => {
-      const roomComponents = room .components;
-      if(roomComponents.length) {
-        roomComponents.forEach(component => {
-          const newComponent = createComponent(io, component, boards);
-          ComponentsCollection.push(newComponent);
-        });
-      }
-    });
+function extractComponentsFromRoom(dataRoom, id) {
+  const { components } = dataRoom;
+  if(Array.isArray(components)) {
+    return components.filter(component => component.idBoard === id);
   }
-  console.log('Finished components synchronization...');
-  finishedSyncEmitter.emit('finished:Sync');
+}
+
+function iterateOverComponents(io, _Components, _board, extractedComponents) {
+  if(Array.isArray(extractedComponents)) {
+    extractedComponents.forEach(extractedComponent => {
+      const newComponent = createComponent(io, extractedComponent, _board);
+      addComponentToCollection(_Components, newComponent);
+    });
+    const { id } = _board;
+    if(checkBoardId(id)) {
+      finishedSyncEmitter.emit('finished:Sync');
+    }
+  }
+}
+
+function addComponentToCollection(_Components, newComponent) {
+  _Components.push(newComponent);
+}
+
+function checkBoardId(id) {
+  return id === _Boards[0].id;
 }
 
 module.exports = { 

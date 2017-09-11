@@ -7,15 +7,15 @@ const io = require('../../index.js').io,
       Motion = five.Motion,
       Servo = five.Servo,
       createComponent = require('../shared/componentCreator'),
-      components = require('../collections/component');
+      _Components = require('../collections/component');
 
 let Boards = require('../collections/board');
 
 io.on('connection', socket => {
   socket.on('create:Component', data => {
-    const component = createComponent(socket, data, Boards);
-    components.push(component);
-    socket.emit('create:Component', !!component || false);
+    const newComponent = createComponent(socket, data, Boards);
+    addComponentToCollection(_Components, newComponent);
+    socket.emit('create:Component', !!newComponent || false);
   });
   
   socket.on('get:Component', data => {
@@ -23,18 +23,24 @@ io.on('connection', socket => {
   });
   
   socket.on('get:Components', data => {
-    returnComponents(socket, components);
+    if(data)
+      returnComponents(socket, _Components);
   });
   
   socket.on('updateState:Component', data => {
-    updateStateComponent(io, components, data);
+    if(data)
+      updateStateComponent(io, _Components, data);
   });
   
 });
 
+function addComponentToCollection(_Components, newComponent) {
+  _Components.push(newComponent);
+}
+
 function returnComponent(socket, data) {
   const { _id } = data;
-  socket.emit('get:Component', components.filter(component => component.id === _id));
+  socket.emit('get:Component', _Components.filter(component => component.id === _id));
 }
 
 function returnComponents(socket, components) {
@@ -107,8 +113,7 @@ function updateStateComponent(io, components, data) {
     }
     case Servo: {
       let { position } = data;
-      position = position === 180 ? position - 5 : position;
-      console.log(position);
+      position = position === 180 ? position - 10 : position;
       component.to(position);
       break;
     }
