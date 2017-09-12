@@ -28,7 +28,7 @@ io.on('connection', socket => {
       returnComponents(socket, _Components);
   });
   
-  socket.on('updateState:Component', data => {
+  socket.on('state:Component', data => {
     if(data)
       updateComponentState(io, _Components, data);
   });
@@ -119,7 +119,7 @@ function updateComponentState(io, components, data) {
       break;
     }
   }
-  io.emit('updateState:Component', data);
+  io.emit('state:Component', data);
 }
 
 
