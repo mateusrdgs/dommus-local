@@ -5,6 +5,7 @@ const five = require('johnny-five'),
 function createBoard(board) {
   const newBoard = extractAndReturn(board);
   addToBoardsCollection(newBoard, _Boards);
+  return newBoard;
 }
 
 function extractAndReturn(board) {
