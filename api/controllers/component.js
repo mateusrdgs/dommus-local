@@ -27,6 +27,12 @@ io.on('connection', socket => {
     if(data)
       returnComponents(socket, _Components);
   });
+
+  socket.on('update:Component', data => {
+    if(data) {
+      updateComponent(io, _Components, _Boards, data);
+    }
+  })
   
   socket.on('state:Component', data => {
     if(data)
@@ -98,6 +104,50 @@ function returnComponents(socket, components) {
   }
 }
 
+function updateComponent(io, components, boards, data) {
+  const { _id } = data,
+        component = components.filter(component => component.id === _id)[0];
+  switch(component.constructor) {
+    case Led: {
+        const { description, digitalPin, idBoard } = data,
+              board = filterBoardById(boards, idBoard);
+        component.custom.description = description || component.custom.description;
+        component.pin = digitalPin || component.pin;
+        component.board = board;
+        component.io = board;
+      break;  
+    }
+    case Thermometer: {
+      break;  
+    }
+    case Light: {
+      break;  
+    }
+    case Motion: {
+      break;  
+    }
+    case Sensor: {
+      break;  
+    }
+    case Servo: {
+      const { description, digitalPin, range, startAt, idBoard } = data,
+            board = filterBoardById(boards, idBoard);
+      component.custom.description = description || component.custom.description;
+      component.pin = digitalPin || component.pin;
+      component.startAt = startAt || component.startAt;
+      component.range[0] = range[0] || component.range[0];
+      component.range[1] = range[1] || component.range[1];
+      component.custom.rotation = range[1] || component.custom.range;
+      component.board = board;
+      component.io = board;
+      break;
+    }
+  }
+  const filteredComponents = [];
+  filterComponents(components, filteredComponents);
+  io.emit('get:Components', filteredComponents);
+}
+
 function updateComponentState(io, components, data) {
   const { id } = data,
         component = components.filter(component => component.id === id)[0];
@@ -122,6 +172,55 @@ function updateComponentState(io, components, data) {
   io.emit('state:Component', data);
 }
 
+function filterComponents(components, filteredComponents) {
+  components.forEach(component => {
+    switch(component.constructor) {
+      case Led: {
+        let { id, pin, board, custom, isOn } = component,
+              { description, type } = custom,
+              boardId = board.id;
+        filteredComponents.push({ boardId, description, type: parseInt(type), pin, isOn, id });
+        break;
+      }
+      case Thermometer: {
+        let { id, pin, board, custom, celsius, fahrenheit } = component,
+              { description, type } = custom,
+              boardId = board.id;
+        filteredComponents.push({ boardId, description, type: parseInt(type), pin, celsius, fahrenheit, id });
+        break;
+      }
+      case Light: {
+        let { id, pin, board, custom, value } = component,
+              { description, type } = custom,
+              boardId = board.id;
+        filteredComponents.push({ boardId, description, type: parseInt(type), pin, value, id });
+        break;
+      }
+      case Motion: {
+        let { id, pin, board, custom, isCalibrated, detectedMotion } = component,
+              { description, type } = custom,
+              boardId = board.id;
+        filteredComponents.push({ boardId, description, type: parseInt(type), pin, isCalibrated, detectedMotion, id });
+        break;
+      }
+      case Sensor: {
+        let { id, pin, board, custom, value } = component,
+          { description, type } = custom,
+          boardId = board.id;
+          filteredComponents.push({ boardId, description, type: parseInt(type), pin, value, id });
+        break;
+      }
+      case Servo: {
+        let { id, pin, board, custom, position, startAt, range } = component,
+              { description, type, rotation } = custom,
+              boardId = board.id;
+        filteredComponents.push({ boardId, description, type: parseInt(type), pin, rotation: range[1], startAt, minRange: range[0], maxRange: range[1], id, position });
+        break;
+      }
+    }
+  });
+  return filteredComponents;
+}
 
 function filterBoardById(_Boards, id) {
   return _Boards.filter(_board => _board.id === id)[0];
