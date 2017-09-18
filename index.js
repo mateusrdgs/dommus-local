@@ -22,9 +22,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 server.listen(port || process.env.PORT, () => console.log(`Express listening on port ${port}`));
 
-io.on('connection', socket => {
+io.once('connection', socket => {
   console.log('User connected');
-  socket.on('disconnect', () => {
+  socket.once('disconnect', () => {
     console.log('User disconnected');
   });
   if(!isSync && !startedSync) {
