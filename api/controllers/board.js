@@ -4,6 +4,9 @@ const io = require('../../index').io,
 io.on('connection', socket => {
   socket.on('create:Board', data => {
     const newBoard = boardCreator(data);
+    if(newBoard) {
+      socket.emit('created:Board', true);
+    }
     console.log(newBoard);
   });
   socket.on('update:Board', data => {
