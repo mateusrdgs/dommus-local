@@ -23,9 +23,12 @@ function sync(io) {
 }
 
 function startSync(io, dataBoards, dataRooms) {
-  if(Array.isArray(dataBoards)) {
+  if((Array.isArray(dataBoards) && dataBoards.length > 0) && (Array.isArray(dataRooms) && dataRooms.length > 0)) {
     startedSyncEmitter.emit('started:Sync');
     createBoards(io, dataBoards, dataRooms);
+  }
+  else {
+    finishedSyncEmitter.emit('finished:Sync');
   }
 }
 
@@ -39,8 +42,12 @@ function createBoards(io, dataBoards, dataRooms) {
 function iterateOverBoards(io, _Boards, _Components, dataRooms) {
   _Boards.forEach(_board => {
     _board.on('ready', () => {
-      if(Array.isArray(dataRooms)) {
+      if(Array.isArray(dataRooms) && dataRooms.length > 0) {
         iterateOverRooms(io, dataRooms, _Components, _board);
+      }
+      else {
+        console.log("No components to sync");
+        finishedSyncEmitter.emit('finished:Sync');
       }
     });
   });
@@ -84,7 +91,7 @@ function checkBoardId(id) {
   return id === _Boards[0].id;
 }
 
-module.exports = { 
+module.exports = {
   sync,
   startedSyncEmitter,
   finishedSyncEmitter
