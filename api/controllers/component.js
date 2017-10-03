@@ -35,8 +35,9 @@ io.on('connection', socket => {
   })
   
   socket.on('state:Component', data => {
-    if(data)
+    if(data) {
       updateComponentState(io, _Components, data);
+    }
   });
   
 });
@@ -46,8 +47,9 @@ function addComponentToCollection(_Components, newComponent) {
 }
 
 function returnComponent(socket, data) {
-  const { _id } = data;
-  socket.emit('get:Component', _Components.filter(component => component.id === _id));
+  const { _id } = data,
+        component = _Components.filter(component => component.id === _id);
+  socket.emit('get:Component', component);
 }
 
 function returnComponents(socket, components) {
@@ -225,3 +227,5 @@ function filterComponents(components, filteredComponents) {
 function filterBoardById(_Boards, id) {
   return _Boards.filter(_board => _board.id === id)[0];
 }
+
+module.exports = returnComponents;

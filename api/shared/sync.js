@@ -4,7 +4,8 @@ const _Boards = require('../collections/board'),
       startedSyncEmitter = new SyncEmitter(),
       finishedSyncEmitter = new SyncEmitter(),
       createComponent = require('../shared/componentCreator'),
-      createBoard = require('../shared/boardCreator');
+      createBoard = require('../shared/boardCreator'),
+      returnComponents = require('../controllers/component');
 
 let startedSync = require('../../index').startedSync;
 
@@ -79,6 +80,7 @@ function iterateOverComponents(io, _Components, _board, extractedComponents) {
     const { id } = _board;
     if(checkBoardId(id)) {
       finishedSyncEmitter.emit('finished:Sync');
+      returnComponents(io, _Components);
     }
   }
 }
