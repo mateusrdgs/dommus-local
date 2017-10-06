@@ -13,11 +13,13 @@ io.on('connection', socket => {
           if(state) {
             setTimeout(() => {
               component.on();
+              io.emit('state:Component', { id: _id, isOn: state });
             }, milliseconds);
           }
           else {
             setTimeout(() => {
               component.off();
+              io.emit('state:Component', { id: _id, isOn: state });
             }, milliseconds);
           }
         break;
