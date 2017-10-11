@@ -7,41 +7,43 @@ const five = require('johnny-five'),
       Servo = five.Servo,
       registerListener = require('../shared/register');
 
-function createComponent(io, data, board) {
+function createComponent(io, socket, data, board) {
   let { type } = data;
   type = parseInt(type);
   switch (type) {
     case 1: { // LED
       const led = createLed(data, board);
+      registerListener(io, socket, led);
       console.log('Led created!');
       return led;
     }
     case 2: { // THERMOMETER
       const thermometer = createThermometer(data, board);
-      registerListener(io, thermometer);
+      registerListener(io, socket, thermometer);
       console.log('Thermometer created!');
       return thermometer;
     }
     case 3: { // LIGHT
       const light = createLight(data, board);
-      registerListener(io, light);
+      registerListener(io, socket, light);
       console.log('Light created!');
       return light;
     }
     case 4: { // MOTION
       const motion = createMotion(data, board);
-      registerListener(io, motion);
+      registerListener(io, socket, motion);
       console.log('Motion created!');
       return motion;
     }
     case 5: { // SENSOR
       const sensor = createSensor(data, board);
-      registerListener(io, sensor);
+      registerListener(io, socket, sensor);
       console.log('Sensor created!');
       return sensor;
     }
     case 6: { // SERVO
       const servo = createServo(data, board);
+      registerListener(io, socket, servo);
       console.log('Servo created!');
       return servo;
     }

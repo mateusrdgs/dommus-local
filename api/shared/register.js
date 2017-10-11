@@ -1,13 +1,16 @@
 const five = require('johnny-five'),
       Fn = five.Fn,
+      Led = five.Led,
       Thermometer = five.Thermometer,
       Light = five.Light,
-      Sensor = five.Sensor;
+      Sensor = five.Sensor,
+      Servo = five.Servo;
 
-function registerListener(io, component) {
+function registerListener(io, socket, component) {
   const { type } = component.custom;
   switch(type) {
     case 1: {
+      registerStateListener(io, socket, component);
       break;
     }
     case 4: {
@@ -15,10 +18,37 @@ function registerListener(io, component) {
       break;
     }
     case 6: {
+      registerStateListener(io, socket, component);
       break;
     }
     default: {
       registerDataListener(io, component);
+      break;
+    }
+  }
+}
+
+function registerStateListener(io, socket, component) {
+  switch(component.constructor) {
+    case Led: {
+        socket.on(`state:${component.id}`, data => {
+          const { isOn } = data;
+          if(isOn) {
+            component.off();
+          }
+          else {
+            component.on();
+          }
+        });
+      break;
+    }
+    case Servo: {
+      socket.on(`state:${component.id}`, data => {
+        const { position } = data;
+        if(parseInt(position) >= 0 && position <= component.range[1]) {
+          component.to(position);
+        }
+      });
       break;
     }
   }

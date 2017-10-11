@@ -12,7 +12,7 @@ function extractAndReturn(board) {
     const { _id, port, description } = board;
     return new five.Board({
       id: _id,
-      port: new Etherport(parseInt(port)),
+      port: '/dev/ttyUSB0',//new Etherport(parseInt(port)),
       custom: { description },
       repl: false,
       debug: false,

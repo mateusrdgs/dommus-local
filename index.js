@@ -22,9 +22,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 server.listen(port || process.env.PORT, () => console.log(`Express listening on port ${port}`));
 
-io.once('connection', socket => {
+io.on('connection', socket => {
   console.log('User connected');
-  socket.once('disconnect', () => {
+  socket.on('disconnect', () => {
     console.log('User disconnected');
   });
   if(!isSync && !startedSync) {
@@ -32,7 +32,7 @@ io.once('connection', socket => {
       startedSync = true;
       console.log('Started system synchronization...');
     });
-    socket.emit('app:Sync', sync(io));
+    socket.emit('app:Sync', sync(io, socket));
     finishedSyncEmitter.on('finished:Sync', () => {
       isSync = !isSync;
       console.log('Finished system synchronization');
