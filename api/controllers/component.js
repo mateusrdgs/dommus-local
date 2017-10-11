@@ -16,7 +16,7 @@ io.on('connection', socket => {
           filteredBoard = filterBoardById(_Boards, idBoard),
           newComponent = createComponent(socket, data, filteredBoard);
     addComponentToCollection(_Components, newComponent);
-    socket.emit('create:Component', !!newComponent || false);
+    socket.emit('created:Component', !!newComponent || false);
   });
   
   socket.on('get:Component', data => {

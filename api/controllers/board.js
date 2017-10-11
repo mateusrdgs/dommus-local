@@ -7,7 +7,6 @@ io.on('connection', socket => {
     if(newBoard) {
       socket.emit('created:Board', true);
     }
-    console.log(newBoard);
   });
   socket.on('update:Board', data => {
     console.log(data);

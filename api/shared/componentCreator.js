@@ -52,9 +52,9 @@ function createComponent(io, data, board) {
 }
 
 function createLed(data, board) {
-  const { _id, digitalPin, type, description } = data;
+  const { id, _id, digitalPin, type, description } = data;
   return new Led({
-    id: _id,
+    id: id || _id,
     pin: digitalPin,
     board,
     custom: { type: parseInt(type), description }
@@ -62,9 +62,9 @@ function createLed(data, board) {
 }
 
 function createThermometer(data, board) {
-  const { _id, analogPin, frequency, type, description } = data;
+  const { id, _id, analogPin, frequency, type, description } = data;
   return new Thermometer({
-    id: _id,
+    id: id ||_id,
     pin: `A${analogPin}`,
     freq: frequency,
     controller: 'LM35',
@@ -74,9 +74,9 @@ function createThermometer(data, board) {
 }
 
 function createLight(data, board) {
-  const { _id, analogPin, frequency, threshold, type, description } = data;
+  const { id, _id, analogPin, frequency, threshold, type, description } = data;
   return new Light({
-    id: _id,
+    id: id || _id,
     pin: `A${analogPin}`,
     freq: frequency,
     controller: "DEFAULT",
@@ -87,9 +87,9 @@ function createLight(data, board) {
 }
 
 function createMotion(data, board) {
-  const { _id, digitalPin, type, description } = data;
+  const { id, _id, digitalPin, type, description } = data;
   return new Motion({
-    id: _id,
+    id: id || _id,
     pin: digitalPin,
     board,
     custom: { type: parseInt(type), description }
@@ -97,9 +97,9 @@ function createMotion(data, board) {
 }
 
 function createSensor(data, board) {
-  const { _id, analogPin, threshold, frequency, type, description } = data;
+  const { id, _id, analogPin, threshold, frequency, type, description } = data;
   return new Sensor({
-    id: _id,
+    id: id || _id,
     pin: `A${analogPin}`,
     threshold,
     freq: frequency,
@@ -109,9 +109,9 @@ function createSensor(data, board) {
 }
 
 function createServo(data, board) {
-  const { _id, digitalPin, range, startAt, type, description, rotation } = data;
+  const { id, _id, digitalPin, range, startAt, type, description, rotation } = data;
   return new Servo({
-    id: _id,
+    id: id || _id,
     pin: digitalPin,
     startAt,
     range,
