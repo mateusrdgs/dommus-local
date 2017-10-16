@@ -9,10 +9,10 @@ function createBoard(board) {
 }
 
 function extractAndReturn(board) {
-    const { _id, port, description } = board;
+    const { id, port, description } = board;
     return new five.Board({
-      id: _id,
-      port: '/dev/ttyUSB0',//new Etherport(parseInt(port)),
+      id,
+      port: new Etherport(parseInt(port)),
       custom: { description },
       repl: false,
       debug: false,
@@ -24,16 +24,6 @@ function addToBoardsCollection(newBoard, _Boards) {
   if(Array.isArray(_Boards)) {
     _Boards.push(newBoard);
   }
-}
-
-function extractPortValue(port) {
-  const splitted = port.split(' '),
-  length = splitted.length;
-  return parseInt(splitted[length - 1]);
-}
-
-function returnEtherport(port) {
-  return new Etherport(port);
 }
 
 module.exports = createBoard;

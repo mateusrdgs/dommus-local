@@ -28,13 +28,13 @@ io.on('connection', socket => {
     console.log('User disconnected');
   });
   if(!isSync && !startedSync) {
-    startedSyncEmitter.on('started:Sync', () => {
+    startedSyncEmitter.on('sync:Start', () => {
       startedSync = true;
       console.log('Started system synchronization...');
     });
-    socket.emit('app:Sync', sync(io, socket));
-    finishedSyncEmitter.on('finished:Sync', () => {
-      isSync = !isSync;
+    socket.emit('sync:App', sync(io));
+    finishedSyncEmitter.on('sync:Finish', () => {
+      isSync = true;
       console.log('Finished system synchronization');
     });
   }

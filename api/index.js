@@ -1,9 +1,9 @@
-const boardController =  require('./controllers/board'),
-      componentController = require('./controllers/component'),
-      taskController = require('./controllers/task');
+const board = require('./sockets/board'),
+      component = require('./sockets/component'),
+      task = require('./sockets/task');
 
 module.exports = {
-  boardController,
-  componentController,
-  taskController
+  board,
+  component,
+  task
 }
