@@ -1,5 +1,5 @@
 const _Boards = require('../collections/board'),
-      { boardCreator } = require('../shared/board'),
+      { boardCreator, boardUpdater } = require('../shared/board'),
       { addItemToCollection } = require('../shared/helpers');
 
 function createBoard(data) {
@@ -10,6 +10,14 @@ function createBoard(data) {
   return board;
 }
 
+function updateBoard(data) {
+  const board = boardUpdater(_Boards, data);
+  if(board) {
+    return board;
+  }
+}
+
 module.exports = {
-  createBoard
+  createBoard,
+  updateBoard
 }

@@ -7,17 +7,17 @@ const io = require('../../index').io,
       } = require('../controllers/component');
 
 io.on('connection', socket => {
-  socket.on('component:Create', data => {
+  socket.on('component:Create', (data, callback) => {
     const component = createComponent(io, data);
-    socket.emit('component:Created', !!component);
+    callback(!!component);
   });
   socket.on('component:Get', data => {
     const component = returnComponent(data);
     socket.emit('component:Get', component);
   });
-  socket.on('component:Update', data => {
+  socket.on('component:Update', (data, callback) => {
     const component = updateComponent(data);
-    //io.emit('component:Updated')
+    callback(!!component);
   });
   socket.on('component:Delete', data => {
     

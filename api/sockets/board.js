@@ -1,17 +1,17 @@
 const io = require('../../index').io,
-      { createBoard } = require('../controllers/board');
+      { createBoard, updateBoard } = require('../controllers/board');
 
 io.on('connection', socket => {
-  socket.on('board:Create', data => {
+  socket.on('board:Create', (data, callback) => {
     const board = createBoard(io, data);
-    socket.emit('board:Created', !!board);
+    callback(!!board);
   });
   socket.on('board:Get', data => {
     
   });
-  socket.on('board:Update', data => {
-    console.log(data);
-    socket.emit('board:Updated', true);
+  socket.on('board:Update', (data, callback) => {
+    const board = updateBoard(data);
+    callback(!!board);
   });
   socket.on('board:Delete', data => {
     

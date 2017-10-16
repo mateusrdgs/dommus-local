@@ -61,19 +61,23 @@ function componentsExtractor(_Components) {
 function componentUpdater(component, board, data) {
   switch(component.constructor) {
     case Led: {
-      updateLed(component, data, board);
+      updateLedOrMotion(component, data, board);
       break;
     }
     case Thermometer: {
+      updateThermometer(component, data, board);
       break;
     }
     case Light: {
+      updateLightOrSensor(component, data, board);
       break;
     }
     case Motion: {
+      updateLedOrMotion(component, data, board);
       break;
     }
     case Sensor: {
+      updateLightOrSensor(component, data, board);
       break;
     }
     case Servo: {
@@ -169,10 +173,29 @@ function createServo(data, board) {
   });
 }
 
-function updateLed(component, data, board) {
+function updateLedOrMotion(component, data, board) {
   const { description, digitalPin } = data;
   component.custom.description = description || component.custom.description;
   component.pin = digitalPin || component.pin;
+  component.board = board;
+  component.io = board;
+}
+
+function updateThermometer(component, data, board) {
+  const { description, analogPin, frequency } = data;
+  component.custom.description = description || component.custom.description;
+  component.pin = analogPin || component.pin;
+  component.freq = frequency || component.freq;
+  component.board = board;
+  component.io = board;
+}
+
+function updateLightOrSensor(component, data, board) {
+  const { description, analogPin, frequency, threshold } = data;
+  component.custom.description = description || component.custom.description;
+  component.pin = analogPin || component.pin;
+  component.freq = frequency || component.freq;
+  component.threshold = threshold || component.threshold;
   component.board = board;
   component.io = board;
 }

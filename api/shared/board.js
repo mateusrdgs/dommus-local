@@ -1,16 +1,13 @@
 const five = require('johnny-five'),
+      Board = five.Board,
       Etherport = require('etherport'),
-      Board = five.Board;
+      { filterItemFromCollectionByProperty } = require('./helpers');
 
 function boardCreator(data) {
   const { id, port, description } = data;
-  return createBoard(id, port, description);
-}
-
-function createBoard(id, port, description) {
   return new Board({
     id,
-    port: new Etherport(port),
+    port: '/dev/ttyUSB1' || new Etherport(port),
     custom: { description },
     repl: false, 
     debug: false,
@@ -18,6 +15,25 @@ function createBoard(id, port, description) {
   });
 }
 
+function boardsExtractor(_Boards) {
+  return _Boards.map(_board => {
+    const { id, custom, port} = _board,
+          { description } = custom;
+    return { id, description, port };
+  });
+}
+
+function boardUpdater(_Boards, data) {
+  const { id, description, port } = data,
+        board = filterItemFromCollectionByProperty(_Boards, 'id', id);
+  board.custom.description = description;
+  //board.port = new Etherport(port);
+  return board;
+}
+
+
 module.exports = {
-  boardCreator
+  boardCreator,
+  boardsExtractor,
+  boardUpdater
 }
