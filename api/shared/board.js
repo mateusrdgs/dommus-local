@@ -7,7 +7,7 @@ function boardCreator(data) {
   const { id, port, description } = data;
   return new Board({
     id,
-    port: '/dev/ttyUSB1' || new Etherport(port),
+    port: new Etherport(port),
     custom: { description },
     repl: false, 
     debug: false,
