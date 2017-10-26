@@ -24,7 +24,7 @@ io.on('connection', socket => {
   });
   socket.on('component:State', data => {
     const state = changeComponentState(data);
-    socket.emit('component:State', state);
+    io.emit('component:State', state);
   });
   socket.on('components:Get', () => {
     const components = returnComponents();
