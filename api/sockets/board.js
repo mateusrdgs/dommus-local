@@ -4,7 +4,9 @@ const io = require('../../index').io,
 io.on('connection', socket => {
   socket.on('board:Create', (data, callback) => {
     const board = createBoard(io, data);
-    callback(!!board);
+    if(callback) {
+      callback(!!board);
+    }
   });
   socket.on('board:Get', data => {
     

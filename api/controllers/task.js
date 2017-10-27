@@ -7,19 +7,19 @@ const five = require('johnny-five'),
 io.on('connection', socket => {
   socket.on('create:Task', data => {
     const { _id, state, milliseconds } = data,
-          component = _Components.filter(component => component.id === _id)[0];
+          component = _Components.filter(component => component)[0];
     switch(component.constructor) {
       case Led: {
           if(state) {
             setTimeout(() => {
               component.on();
-              io.emit('state:Component', { id: _id, isOn: state });
+              io.emit('component:State', { id: _id, isOn: state });
             }, milliseconds);
           }
           else {
             setTimeout(() => {
               component.off();
-              io.emit('state:Component', { id: _id, isOn: state });
+              io.emit('component:State', { id: _id, isOn: state });
             }, milliseconds);
           }
         break;
