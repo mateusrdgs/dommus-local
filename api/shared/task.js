@@ -4,7 +4,7 @@ const five = require('johnny-five'),
       mongoose = require('mongoose'),
       ObjectId = mongoose.Types.ObjectId,
       _Tasks = require('../collections/task'),
-      { addItemToCollection } = require('../shared/helpers');
+      { addItemToCollection, filterItemFromCollectionByProperty } = require('../shared/helpers');
 
 function taskCreator(io, data, component) {
   switch(component.constructor) {
@@ -26,12 +26,14 @@ function taskLed(io, data, component) {
   if(state) {
     setTimeout(() => {
       component.on();
+      changeTaskStatus(newId, _Tasks);
       io.emit('component:State', { id, isOn: state });
     }, milliseconds);
   }
   else {
     setTimeout(() => {
       component.off();
+      changeTaskStatus(newId, _Tasks);
       io.emit('component:State', { id, isOn: state });
     }, milliseconds);
   }
@@ -46,6 +48,7 @@ function taskServo(io, data, component) {
     if(position) {
       setInterval(() => {
         component.to(position);
+        changeTaskStatus(newId, _Tasks);
         io.emit('component:State', { id, position });
       }, milliseconds);
       saveTask(newId, data, _Tasks);
@@ -57,14 +60,19 @@ function taskServo(io, data, component) {
 
 function saveTask(id, data, _Tasks) {
   const { id: target, state, position, milliseconds } = data;
-  if (state) {
-    const task = { id, target, state, milliseconds, executed: false };
+  if (state !== undefined) {
+    const task = { id, target, state, milliseconds, status: false };
     addItemToCollection(_Tasks, task);
   }
   else {
-    const task = { id, target, position, milliseconds, executed: false };
+    const task = { id, target, position, milliseconds, status: false };
     addItemToCollection(_Tasks, task);
   }
+}
+
+function changeTaskStatus(id, _Tasks) {
+  const task = filterItemFromCollectionByProperty(_Tasks, 'id', id);
+  task['status'] = true;
 }
 
 module.exports = {
