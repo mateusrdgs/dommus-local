@@ -1,6 +1,6 @@
 const board = require('./sockets/board'),
       component = require('./sockets/component'),
-      task = require('./controllers/task');
+      task = require('./sockets/task');
 
 module.exports = {
   board,

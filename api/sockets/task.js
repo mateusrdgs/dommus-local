@@ -1,8 +1,10 @@
-const io = require('../../index').io;
+const io = require('../../index').io,
+      { createTask } = require('../controllers/task');
 
 io.on('connection', socket => {
-  socket.on('task:Create', data => {
-
+  socket.on('task:Create', (data, callback) => {
+    const createdTask = createTask(io, data);
+    callback(createdTask);
   });
   socket.on('task:Get', data => {
     
