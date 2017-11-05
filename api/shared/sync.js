@@ -70,8 +70,10 @@ function iterateOverComponents(io, _Components, _board, extractedComponents) {
     extractedComponents.forEach(extractedComponent => {
       if(_board['id'] === extractedComponent['idBoard']) {
         const component = componentCreator(extractedComponent, _board);
-        registerListener(io, component)
-        addItemToCollection(_Components, component);
+        if(component) {
+          registerListener(io, component)
+          addItemToCollection(_Components, component);
+        }
       }
     });
     if(extractedComponents.length === _Components.length) {

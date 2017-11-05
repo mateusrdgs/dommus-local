@@ -105,12 +105,12 @@ function componentStateUpdater(component, data) {
 }
 
 function createLed(data, board) {
-  const { id, digitalPin, type, description } = data;
+  const { id, digitalPin, type, description, command } = data;
   return new Led({
     id,
     pin: digitalPin,
     board,
-    custom: { type: parseInt(type), description }
+    custom: { type: parseInt(type), description, command }
   });
 }
 
@@ -133,7 +133,7 @@ function createLight(data, board) {
     pin: `A${analogPin}`,
     freq: frequency,
     controller: "DEFAULT",
-    threshold,
+    threshold: 1,
     board,
     custom: { type: parseInt(type), description }
   });
@@ -162,23 +162,26 @@ function createSensor(data, board) {
 }
 
 function createServo(data, board) {
-  const { id, digitalPin, range, startAt, type, description, rotation } = data;
+  const { id, digitalPin, range, startAt, type, description, rotation, command } = data;
   return new Servo({
     id,
     pin: digitalPin,
     startAt,
     range,
     board,
-    custom: { type: parseInt(type), description, rotation }
+    custom: { type: parseInt(type), description, rotation, command }
   });
 }
 
 function updateLedOrMotion(component, data, board) {
-  const { description, digitalPin } = data;
+  const { description, digitalPin, command } = data;
   component.custom.description = description || component.custom.description;
   component.pin = digitalPin || component.pin;
   component.board = board;
   component.io = board;
+  if(component.custom.hasOwnProperty('command')) {
+    component.custom.command = command;
+  }
 }
 
 function updateThermometer(component, data, board) {
@@ -201,13 +204,14 @@ function updateLightOrSensor(component, data, board) {
 }
 
 function updateServo(component, data, board) {
-  const { description, digitalPin, range, startAt } = data;
+  const { description, digitalPin, range, startAt, command } = data;
   component.custom.description = description || component.custom.description;
   component.pin = digitalPin || component.pin;
   component.startAt = startAt || component.startAt;
   component.range[0] = range[0] || component.range[0];
   component.range[1] = range[1] || component.range[1];
   component.custom.rotation = range[1] || component.custom.range;
+  component.custom.command = command || component.custom.command;
   component.board = board;
   component.io = board;
 }
@@ -231,9 +235,9 @@ function updateServoState(component, data) {
 
 function filterLed(_component) {
   const { id, pin, board, custom, isOn } = _component,
-        { description, type } = custom,
+        { description, type, command } = custom,
         idBoard = board.id;
-  return { id, description, digitalPin: pin, type, isOn, idBoard };
+  return { id, description, digitalPin: pin, type, isOn, idBoard, command };
 }
 
 function filterThermometer(_component) {

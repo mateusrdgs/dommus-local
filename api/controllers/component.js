@@ -17,15 +17,15 @@ function createComponent(io, data) {
 }
 
 function updateComponent(data) {
-  const { _id, idBoard } = data,
+  const { id, idBoard } = data,
         board = filterItemFromCollectionByProperty(_Boards, 'id', idBoard),
-        component = filterItemFromCollectionByProperty(_Components, 'id', _id);
+        component = filterItemFromCollectionByProperty(_Components, 'id', id);
   componentUpdater(component, board, data);
 }
 
 function returnComponent(data) {
-  const { _id } = data;
-  return filterItemFromCollectionByProperty(_Components, 'id', _id);
+  const { id } = data;
+  return filterItemFromCollectionByProperty(_Components, 'id', id);
 }
 
 function returnComponents() {
