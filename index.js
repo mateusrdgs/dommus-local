@@ -1,7 +1,7 @@
 require('dotenv').config({ path: '.env' });
 
 const fs =  require('fs'),
-      https = require('https'),
+      http = require('http'),
       express = require('express'),
       app = express(),
       helmet = require('helmet'),
@@ -10,14 +10,14 @@ const fs =  require('fs'),
       mongoose = require('mongoose'),
       ObjectId = mongoose.Types.ObjectId,
       port = 4000,
-      options = {
+      /*options = {
         key: fs.readFileSync('/etc/openssl/remote-key.pem'),
         cert: fs.readFileSync('/etc/openssl/remote-cert.pem'),
         passphrase: process.env.PASSPHRASE,
         requestCert: false,
         rejectUnauthorized: false
-      },
-      server = https.createServer(options, app),
+      }*/
+      server = http.createServer(app),
       io = require('socket.io')().listen(server),
       _Users =  require('./api/collections/user');
 

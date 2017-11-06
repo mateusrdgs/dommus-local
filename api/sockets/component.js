@@ -29,7 +29,7 @@ io.on('connection', socket => {
     io.emit('component:State', state);
   });
   socket.on('component:StateVoice', data => {
-    changeComponentStateVoice(data);
+    changeComponentStateVoice(io, data);
   })
   socket.on('components:Get', () => {
     const components = returnComponents();
@@ -37,7 +37,7 @@ io.on('connection', socket => {
   });
 });
 
-function changeComponentStateVoice(data) {
+function changeComponentStateVoice(io, data) {
   const [component] = 
     _Components.filter(component => component.custom.command
                                                     .some(command => {
@@ -58,6 +58,7 @@ function changeComponentStateVoice(data) {
     else {
       component.off();
     }
+    io.emit('component:State', { id: component.id, isOn: component.isOn });
   }
 }
 
