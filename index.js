@@ -1,4 +1,8 @@
-const express = require('express'),
+require('dotenv').config({ path: '.env' });
+
+const fs =  require('fs'),
+      https = require('https'),
+      express = require('express'),
       app = express(),
       helmet = require('helmet'),
       bodyParser = require('body-parser'),
@@ -6,7 +10,14 @@ const express = require('express'),
       mongoose = require('mongoose'),
       ObjectId = mongoose.Types.ObjectId,
       port = 4000,
-      server = require('http').createServer(app),
+      options = {
+        key: fs.readFileSync('/etc/openssl/remote-key.pem'),
+        cert: fs.readFileSync('/etc/openssl/remote-cert.pem'),
+        passphrase: process.env.PASSPHRASE,
+        requestCert: false,
+        rejectUnauthorized: false
+      },
+      server = https.createServer(options, app),
       io = require('socket.io')().listen(server),
       _Users =  require('./api/collections/user');
 
@@ -22,6 +33,8 @@ app.use(helmet());
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+
 
 server.listen(port || process.env.PORT, () => console.log(`Express listening on port ${port}`));
 
