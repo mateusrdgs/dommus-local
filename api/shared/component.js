@@ -326,7 +326,7 @@ function filterComponentsByLevenshteinDistance(_Components, voiceCommand) {
     return _Components.filter(component => {
       return component.custom.command
                       .some(command => {
-                        return (1 - levenshteinDistance(command, voiceCommand) / command.length)  >= 0.75;
+                        return (1 - levenshteinDistance(command, voiceCommand) / command.length)  >= 0.9;
                       });
     });
   }
