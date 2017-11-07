@@ -4,7 +4,8 @@ const five = require('johnny-five'),
       Light = five.Light,
       Sensor = five.Sensor,
       Motion = five.Motion,
-      Servo = five.Servo;
+      Servo = five.Servo,
+      levenshteinDistance = require('./levenshtein');
 
 function componentCreator(data, board) {
   const { type } = data;
@@ -100,6 +101,25 @@ function componentStateUpdater(component, data) {
     case Servo: {
         updateServoState(component, data);
       break;
+    }
+  }
+}
+
+function componentStateVoiceUpdater(_Components, voiceCommand) {
+  const components = filterComponentsByLevenshteinDistance(_Components, voiceCommand);
+  if(Array.isArray(components)) {
+    const [ component ] = components;
+    if(component) {
+      switch (component.constructor) {
+        case Light:
+            updateLedStateVoice(component, voiceCommand);
+          break;
+        case Servo:
+            updateServoStateVoice(component, voiceCommand);
+          break;
+        default:
+          break;
+      }
     }
   }
 }
@@ -233,6 +253,32 @@ function updateServoState(component, data) {
   }
 }
 
+function updateLedStateVoice(component, voiceCommand) {
+  const [ on, off ] = component.custom.command.map(command => levenshteinDistance(command, voiceCommand));
+  if(on < off) {
+    component.on();
+  }
+  else {
+    component.off();
+  }
+  return { id: component.id, isOn: component.isOn };
+}
+
+function updateServoStateVoice(component, voiceCommand) {
+  const splitted = voiceCommand.split(' ');
+  if(Array.isArray(splitted)) {
+    const textDegree = splitted[splitted.length - 1] || '',
+          parsedDegree = parseInt(textDegree);
+    if(parsedDegree >= 0) {
+      const { range } = component;
+      if(parsedDegree >= range[0] && parsedDegree <= range[1]) {
+        component.to(range);
+        return { id: component.id, position: component.position };
+      }
+    }
+  }
+}
+
 function filterLed(_component) {
   const { id, pin, board, custom, isOn } = _component,
         { description, type, command } = custom,
@@ -275,9 +321,21 @@ function filterServo(_component) {
   return { id, description, digitalPin: pin, type, startAt, range, position, idBoard };
 }
 
+function filterComponentsByLevenshteinDistance(_Components, voiceCommand) {
+  if(Array.isArray(_Components)) {
+    return _Components.filter(component => {
+      return component.custom.command
+                      .some(command => {
+                        return (1 - levenshteinDistance(command, voiceCommand) / command.length)  >= 0.75;
+                      });
+    });
+  }
+}
+
 module.exports = {
   componentCreator,
   componentUpdater,
   componentStateUpdater,
+  componentStateVoiceUpdater,
   componentsExtractor
 };
