@@ -111,12 +111,10 @@ function componentStateVoiceUpdater(_Components, voiceCommand) {
     const [ component ] = components;
     if(component) {
       switch (component.constructor) {
-        case Light:
-            updateLedStateVoice(component, voiceCommand);
-          break;
+        case Led:
+          return updateLedStateVoice(component, voiceCommand);
         case Servo:
-            updateServoStateVoice(component, voiceCommand);
-          break;
+          return updateServoStateVoice(component, voiceCommand);
         default:
           break;
       }
@@ -272,7 +270,7 @@ function updateServoStateVoice(component, voiceCommand) {
     if(parsedDegree >= 0) {
       const { range } = component;
       if(parsedDegree >= range[0] && parsedDegree <= range[1]) {
-        component.to(range);
+        component.to(parsedDegree);
         return { id: component.id, position: component.position };
       }
     }
@@ -323,13 +321,46 @@ function filterServo(_component) {
 
 function filterComponentsByLevenshteinDistance(_Components, voiceCommand) {
   if(Array.isArray(_Components)) {
-    return _Components.filter(component => {
+    const distancedComponents =
+      _Components.map(component => ({ id: component.id, command: component.custom.command }))
+                 .map(component => component.command.map(command => ({ id: component.id, distance: levenshteinDistance(command, voiceCommand) })))
+                 .reduce((prev, curr) => [...prev, ...curr]);
+    const minor = _Components.filter(component => {
+      const minorDistance = Math.min(...distancedComponents.map(component => component.distance)),
+            [ filteredComponent ] = distancedComponents.filter(component => component.distance === minorDistance);
+      return component.id === filteredComponent.id;
+    });
+    return minor;
+    /*(return _Components.filter(component => {
+      const minorDistance = Math.min(...distancedComponents.map(component => component.distance))
+    })
+    const minorDistance = Math.min(...distancedComponents.map(component => component.distance));
+    const filteredComponent = distancedComponents.filter(component => component.distance === minorDistance);*/
+    
+    
+    /*return Math.min(
+      _Components.map(component => ({ id: component.id, command: component.custom.command }))
+                 .map(component => component.command.map(command => ({ id: component.id, command })))
+                 .reduce((prev, curr) => [...prev, ...curr])
+                 .map(component => levenshteinDistance(component.command, voiceCommand))
+    );
+    return comps.reduce((prev, curr) => {
+      return Math.min(
+        levenshteinDistance(prev.command, voiceCommand),
+        levenshteinDistance(curr.command, voiceCommand)
+      );
+    });*/
+  }
+                             //[prev.reduce((prev, curr) => [prev, ...curr]), ...curr.reduce((prev, curr) => [prev, ...curr])]);
+    
+    /*return _Components.filter(component => {
       return component.custom.command
                       .some(command => {
-                        return (1 - levenshteinDistance(command, voiceCommand) / command.length)  >= 0.9;
+                        const dist = levenshteinDistance(command, voiceCommand),
+                              sub = 1 - (dist / command.length);
+                        return sub  >= 0.6;
                       });
-    });
-  }
+    });*/
 }
 
 module.exports = {

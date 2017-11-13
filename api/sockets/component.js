@@ -29,7 +29,7 @@ io.on('connection', socket => {
   });
   socket.on('component:StateVoice', data => {
     const state = changeComponentStateVoice(data);
-    if(state.hasOwnProperty('id')) {
+    if(state && state.hasOwnProperty('id')) {
       io.emit('component:State', state);
     }
   })
