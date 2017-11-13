@@ -8,20 +8,22 @@ const five = require('johnny-five'),
       Servo = five.Servo;
 
 function registerListener(io, component) {
-  switch(component.constructor) {
-    case Led: {
-      break;
-    }
-    case Motion: {
-      registerMotionListener(io, component);
-      break;
-    }
-    case Servo: {
-      break;
-    }
-    default: {
-      registerDataListener(io, component);
-      break;
+  if(component) {
+    switch(component.constructor) {
+      case Led: {
+        break;
+      }
+      case Motion: {
+        registerMotionListener(io, component);
+        break;
+      }
+      case Servo: {
+        break;
+      }
+      default: {
+        registerDataListener(io, component);
+        break;
+      }
     }
   }
 }
