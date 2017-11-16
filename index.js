@@ -34,8 +34,6 @@ app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-
-
 server.listen(port || process.env.PORT, () => console.log(`Express listening on port ${port}`));
 
 io.on('connection', socket => {
@@ -60,16 +58,19 @@ io.on('connection', socket => {
       socket.disconnect();
     }
     else {
-      if(!isSync && !startedSync) {
-        startedSyncEmitter.on('sync:Start', () => {
-          startedSync = true;
-          console.log('Started system synchronization...');
-        });
-        socket.emit('sync:App', sync(io));
-        finishedSyncEmitter.on('sync:Finish', () => {
-          isSync = true;
-          console.log('Finished system synchronization');
-        });
+        if(!isSync && !startedSync) {
+          startedSyncEmitter.on('sync:Start', () => {
+            startedSync = true;
+            console.log('Started system synchronization...');
+          });
+          socket.emit('sync:App', sync(io));
+          finishedSyncEmitter.on('sync:Finish', () => {
+            isSync = true;
+            console.log('Finished system synchronization');
+          });
+        }
+      else {
+        console.log('System already sync');
       }
     }
   }

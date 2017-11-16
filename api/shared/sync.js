@@ -1,4 +1,6 @@
-const _Boards = require('../collections/board'),
+const BSON = require('bson'),
+      fs = require('fs'),
+      _Boards = require('../collections/board'),
       _Components = require('../collections/component'),
       SyncEmitter = require('./events').SyncEmitter,
       startedSyncEmitter = new SyncEmitter(),
@@ -11,15 +13,90 @@ const _Boards = require('../collections/board'),
 
 let startedSync = require('../../index').startedSync;
 
-function sync(io) {
-  return function(data) {
-    if(data && !startedSync) {
-      const { boards, rooms } = data;
-      if(boards && rooms) {
-        startSync(io, boards, rooms);
+function checkExistentFile(fileName) {
+  return fs.existsSync(fileName);
+}
+
+function readDataFromFile(fileName) {
+  return JSON.parse(fs.readFileSync(fileName));
+}
+
+function extractValues(object) {
+  return Object.keys(object).map(key => object[key]);
+}
+
+function flatArray(arr, prevArr) {
+  return [...arr, ...prevArr];
+}
+
+function checkIfIsObject(property) {
+  return typeof property === 'object';
+}
+
+function returnTargetSplice(target, index, quantity) {
+  target.splice(index, quantity);
+  return target;
+}
+
+function returnEqualArraysLength() {
+  //return Array.from(arguments).every(extArr => extArr.map(inArray => inArray.length).every(arr => arr.length === extArr.length));
+}
+
+function iterateOverObjectProperties(target, values, index) {
+  if(Array.isArray(values) && index >= values.length) {
+    return values;
+  }
+  else {
+    if(!values) {
+      return iterateOverObjectProperties(target, extractValues(target), 0);
+    }
+    else {
+      if(checkIfIsObject(values[index])) {
+        const extractedValues = extractValues(values[index]);
+        return iterateOverObjectProperties(
+                 target,
+                 flatArray(
+                   returnTargetSplice(values, index, 1),
+                   extractedValues
+                 ),
+                 index
+              );
       }
       else {
-        console.log('Nothing to sync...');
+        return iterateOverObjectProperties(target, values, ++index);
+      }
+    }
+  }
+}
+
+function sync(io) {
+  return function(data) {
+    if(data) {
+      if(checkExistentFile('residence.json')) {
+        if(data) {
+          const flatData = iterateOverObjectProperties(data, '', 0),
+                flatDataFile = iterateOverObjectProperties(readDataFromFile('residence.json'), '', 0);
+          if(Array.isArray(flatData) && Array.isArray(flatDataFile)) {
+            if(flatData.length === flatDataFile.length) {
+              const equalData = flatData.every(flatDataValue => flatDataFile.some(flatDataFileValue => flatDataValue === flatDataFileValue));
+              console.log(equalData);
+            }
+            else {
+              
+            }
+          }
+        }
+      }
+      else {
+        if(!startedSync) {
+          const { boards, rooms } = data;
+          if(boards && rooms) {
+            startSync(io, boards, rooms);
+          }
+          else {
+            console.log('Nothing to sync...');
+          }
+        }
       }
     }
   }
