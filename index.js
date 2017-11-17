@@ -37,8 +37,7 @@ io.on('connection', socket => {
   });
 
   if(storeUserId(_Users, idUser)) {
-    const redundantUser = checkRedundantUserId(_Users, idUser);
-    if(redundantUser) {
+    if(checkRedundantUserId(_Users, idUser)) {
       socket.emit('duplicated_connection', 'User already connected!');
       socket.disconnect();
     }
@@ -61,31 +60,7 @@ io.on('connection', socket => {
   }
 });
 
-function startOfflineSyncronization(syncEmitter, startedSync, isSync, sync, io, data) {
-  syncEmitter.on('sync:Start', () => {
-    startedSync = true;
-    console.log('Started system synchronization...');
-  });
-  syncEmitter.on('sync:Finish', () => {
-    isSync = true;
-    console.log('Finished system synchronization...');
-  });
-  sync(io)(data);
-}
-
-function startOnlineSyncronization(syncEmitter, startedSync, socket, isSync) {
-  syncEmitter.on('sync:Start', () => {
-    startedSync = true;
-    console.log('Started system synchronization...');
-  });
-  socket.emit('sync:App', sync(io));
-  syncEmitter.on('sync:Finish', () => {
-    isSync = true;
-    console.log('Finished system synchronization...');
-  });
-}
-
-const { syncEmitter, sync } = require('./api/shared/sync'),
+const { syncEmitter, sync, startOfflineSyncronization, startOnlineSyncronization } = require('./api/shared/sync'),
       { checkExistentFile, readDataFromJSONFile } = require('./api/shared/helpers'),
       { checkRedundantUserId, removeUserIdFromStore, storeUserId } = require('./api/shared/user-management'),
       _Users =  require('./api/collections/user');

@@ -9,18 +9,42 @@ const BSON = require('bson'),
       registerListener =  require('../shared/register'),
       syncEmitter = new SyncEmitter();
 
-  /*if(checkExistentFile('residence.json')) {
-    const flatData = iterateOverObjectProperties(data, '', 0),
-          flatDataFile = iterateOverObjectProperties(readDataFromJSONFile('residence.json'), '', 0);
-    if(Array.isArray(flatData) && Array.isArray(flatDataFile)) {
-      if(areArraysEqualLength(flatData, flatDataFile)) {
-        return flatData.every(flatDataValue => flatDataFile.some(flatDataFileValue => flatDataValue === flatDataFileValue));
-      } else {
-        fs.writeFileSync('residence.json', JSON.stringify(data));
-        return true;
-      }
+/*if(checkExistentFile('residence.json')) {
+  const flatData = iterateOverObjectProperties(data, '', 0),
+  flatDataFile = iterateOverObjectProperties(readDataFromJSONFile('residence.json'), '', 0);
+  if(Array.isArray(flatData) && Array.isArray(flatDataFile)) {
+    if(areArraysEqualLength(flatData, flatDataFile)) {
+      return flatData.every(flatDataValue => flatDataFile.some(flatDataFileValue => flatDataValue === flatDataFileValue));
+    } else {
+      fs.writeFileSync('residence.json', JSON.stringify(data));
+      return true;
     }
-  }*/
+  }
+}*/
+
+function startOfflineSyncronization(syncEmitter, startedSync, isSync, sync, io, data) {
+  syncEmitter.on('sync:Start', () => {
+    startedSync = true;
+    console.log('Started system synchronization...');
+  });
+  syncEmitter.on('sync:Finish', () => {
+    isSync = true;
+    console.log('Finished system synchronization...');
+  });
+  sync(io)(data);
+}
+
+function startOnlineSyncronization(syncEmitter, startedSync, socket, isSync) {
+  syncEmitter.on('sync:Start', () => {
+    startedSync = true;
+    console.log('Started system synchronization...');
+  });
+  socket.emit('sync:App', sync(io));
+  syncEmitter.on('sync:Finish', () => {
+    isSync = true;
+    console.log('Finished system synchronization...');
+  });
+}
 
 function sync(io) {
   return function(data) {
@@ -41,6 +65,8 @@ function sync(io) {
     }
   }
 }
+
+
 
 function startSync(io, dataBoards, dataRooms) {
   if((Array.isArray(dataBoards) && dataBoards.length > 0) && (Array.isArray(dataRooms) && dataRooms.length > 0)) {
@@ -102,5 +128,7 @@ function iterateOverComponents(io, _Components, _board, extractedComponents) {
 
 module.exports = {
   sync,
-  syncEmitter
+  syncEmitter,
+  startOfflineSyncronization,
+  startOnlineSyncronization
 };
