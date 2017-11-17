@@ -1,15 +1,15 @@
 const BSON = require('bson'),
-      fs = require('fs'),
-      _Boards = require('../collections/board'),
-      _Components = require('../collections/component'),
-      SyncEmitter = require('./events').SyncEmitter,
-      startedSyncEmitter = new SyncEmitter(),
-      finishedSyncEmitter = new SyncEmitter(),
-      componentCreator = require('../shared/component').componentCreator,
-      componentsExtractor = require('../shared/component').componentsExtractor,
-      addItemToCollection = require('../shared/helpers').addItemToCollection,
-      { boardCreator } = require('../shared/board'),
-      registerListener =  require('../shared/register');
+fs = require('fs'),
+_Boards = require('../collections/board'),
+_Components = require('../collections/component'),
+SyncEmitter = require('./events').SyncEmitter,
+startedSyncEmitter = new SyncEmitter(),
+finishedSyncEmitter = new SyncEmitter(),
+componentCreator = require('../shared/component').componentCreator,
+componentsExtractor = require('../shared/component').componentsExtractor,
+addItemToCollection = require('../shared/helpers').addItemToCollection,
+{ boardCreator } = require('../shared/board'),
+registerListener =  require('../shared/register');
 
 let startedSync = require('../../index').startedSync;
 
@@ -54,13 +54,13 @@ function iterateOverObjectProperties(target, values, index) {
       if(checkIfIsObject(values[index])) {
         const extractedValues = extractValues(values[index]);
         return iterateOverObjectProperties(
-                 target,
-                 flatArray(
-                   returnTargetSplice(values, index, 1),
-                   extractedValues
-                 ),
-                 index
-              );
+          target,
+          flatArray(
+            returnTargetSplice(values, index, 1),
+            extractedValues
+          ),
+          index
+        );
       }
       else {
         return iterateOverObjectProperties(target, values, ++index);
@@ -69,26 +69,14 @@ function iterateOverObjectProperties(target, values, index) {
   }
 }
 
-function sync(io) {
-  return function(data) {
-    if(data) {
-      if(checkExistentFile('residence.json')) {
-        if(data) {
-          const flatData = iterateOverObjectProperties(data, '', 0),
-                flatDataFile = iterateOverObjectProperties(readDataFromFile('residence.json'), '', 0);
-          if(Array.isArray(flatData) && Array.isArray(flatDataFile)) {
-            if(flatData.length === flatDataFile.length) {
-              const equalData = flatData.every(flatDataValue => flatDataFile.some(flatDataFileValue => flatDataValue === flatDataFileValue));
-              console.log(equalData);
-            }
-            else {
-              
-            }
-          }
-        }
-      }
-      else {
-        if(!startedSync) {
+function verifyDataConsistency(data) {
+  if(checkExistentFile('residence.json')) {
+    const flatData = iterateOverObjectProperties(data, '', 0),
+    flatDataFile = iterateOverObjectProperties(readDataFromFile('residence.json'), '', 0);
+    if(Array.isArray(flatData) && Array.isArray(flatDataFile)) {
+      if(flatData.length === flatDataFile.length) {
+        const equalData = flatData.every(flatDataValue => flatDataFile.some(flatDataFileValue => flatDataValue === flatDataFileValue));
+        if(equalData && !startedSync) {
           const { boards, rooms } = data;
           if(boards && rooms) {
             startSync(io, boards, rooms);
@@ -97,7 +85,30 @@ function sync(io) {
             console.log('Nothing to sync...');
           }
         }
+        else {
+          
+        }
+      } else {
+        fs.writeFileSync('residence.json', JSON.stringify(data));
       }
+    }
+  }
+}
+
+function sync(io) {
+  return function(data) {
+    if(data) {
+      verifyDataConsistency(data);
+    } else {
+      /*if(!startedSync) {
+        const { boards, rooms } = data;
+        if(boards && rooms) {
+          startSync(io, boards, rooms);
+        }
+        else {
+          console.log('Nothing to sync...');
+        }
+      }*/
     }
   }
 }
@@ -137,7 +148,7 @@ function iterateOverBoards(io, _Boards, _Components, dataRooms) {
 function iterateOverRooms(io, dataRooms, _Components, _board) {
   if(Array.isArray(dataRooms)) {
     const extractedComponents = dataRooms.map(dataRoom => dataRoom['components'])
-                                         .reduce((prev, curr) => { return prev.concat(curr) }, []);
+    .reduce((prev, curr) => { return prev.concat(curr) }, []);
     iterateOverComponents(io, _Components, _board, extractedComponents);
   }
 }
