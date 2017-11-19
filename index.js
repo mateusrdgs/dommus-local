@@ -42,32 +42,41 @@ io.on('connection', socket => {
       socket.disconnect();
     }
     else {
-      if(startedSync && isSync) {
-        console.log('Nothing to sync...')
+      if(isSync) {
+        console.log('System already synchronized...');
+      }
+      else if(startedSync) {
+        console.log('System synchronization already started...');
       }
       else {
-        if(checkExistentFile('residence.json')) {
-          const data = readDataFromJSONFile('residence.json');
+        startedSync = true;
+        if(checkExistentFile('.residence.bson')) {
+          const data = readDataFromBSONFile('.residence.bson');
           if(data) {
-            startOfflineSyncronization(syncEmitter, startedSync, isSync, sync, io, data);
+            isSync = startOfflineSyncronization(io, data);
+            startedSync = false;
+          }
+          else {
+            isSync = startOnlineSyncronization(io, socket);
+            startedSync = false;
           }
         }
         else {
-          startOnlineSyncronization(syncEmitter, startedSync, socket, isSync);
+          isSync = startOnlineSyncronization(io, socket);
+          startedSync = false;
         }
       }
     }
   }
 });
 
-const { syncEmitter, sync, startOfflineSyncronization, startOnlineSyncronization } = require('./api/shared/sync'),
-      { checkExistentFile, readDataFromJSONFile } = require('./api/shared/helpers'),
+const { startOfflineSyncronization, startOnlineSyncronization } = require('./api/shared/sync'),
+      { checkExistentFile, readDataFromBSONFile } = require('./api/shared/helpers'),
       { checkRedundantUserId, removeUserIdFromStore, storeUserId } = require('./api/shared/user-management'),
       _Users =  require('./api/collections/user');
 
 module.exports = {
-  io,
-  startedSync
+  io
 };
 
 require('dotenv').config({ path: '.env' });

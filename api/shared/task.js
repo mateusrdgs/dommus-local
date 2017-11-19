@@ -4,6 +4,7 @@ const five = require('johnny-five'),
       mongoose = require('mongoose'),
       ObjectId = mongoose.Types.ObjectId,
       _Tasks = require('../collections/task'),
+      Task = require('../models/task'),
       _Components = require('../collections/component'),
       { addItemToCollection, filterItemFromCollectionByProperty } = require('../shared/helpers');
 
@@ -62,17 +63,14 @@ function taskServo(io, data, component) {
 function saveTask(id, data, _Tasks) {
   const { id: target, state, position, milliseconds } = data,
         component = filterItemFromCollectionByProperty(_Components, 'id', target),
-        task = {
+        task = new Task(
           id,
-          date: new Date().toLocaleDateString(),
-          value: (state  !== undefined ? state : position ),
-          component: {
-            id: target,
-            description: component.custom.description
-          },
-          status: false,
+          new Date().toLocaleDateString(),
+          (state !== undefined ? state : position),
+          { id: target, description: component.custom.description },
+          false,
           milliseconds
-        };
+        );
   addItemToCollection(_Tasks, task);
 }
 

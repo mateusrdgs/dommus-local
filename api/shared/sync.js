@@ -1,55 +1,39 @@
-const BSON = require('bson'),
-      _Boards = require('../collections/board'),
+const _Boards = require('../collections/board'),
       _Components = require('../collections/component'),
       componentCreator = require('../shared/component').componentCreator,
       componentsExtractor = require('../shared/component').componentsExtractor,
-      { addItemToCollection, writeDataOnJSONFile } = require('../shared/helpers'),
+      { addItemToCollection, writeDataOnBSONFile } = require('../shared/helpers'),
       { SyncEmitter } = require('./events'),
       { boardCreator } = require('../shared/board'),
       registerListener =  require('../shared/register'),
       syncEmitter = new SyncEmitter();
 
-/*if(checkExistentFile('residence.json')) {
-  const flatData = iterateOverObjectProperties(data, '', 0),
-  flatDataFile = iterateOverObjectProperties(readDataFromJSONFile('residence.json'), '', 0);
-  if(Array.isArray(flatData) && Array.isArray(flatDataFile)) {
-    if(areArraysEqualLength(flatData, flatDataFile)) {
-      return flatData.every(flatDataValue => flatDataFile.some(flatDataFileValue => flatDataValue === flatDataFileValue));
-    } else {
-      fs.writeFileSync('residence.json', JSON.stringify(data));
-      return true;
-    }
-  }
-}*/
-
-function startOfflineSyncronization(syncEmitter, startedSync, isSync, sync, io, data) {
+function startOfflineSyncronization(io, data) {
   syncEmitter.on('sync:Start', () => {
-    startedSync = true;
     console.log('Started system synchronization...');
   });
   syncEmitter.on('sync:Finish', () => {
-    isSync = true;
     console.log('Finished system synchronization...');
   });
   sync(io)(data);
+  return true;
 }
 
-function startOnlineSyncronization(syncEmitter, startedSync, socket, isSync) {
+function startOnlineSyncronization(io, socket) {
   syncEmitter.on('sync:Start', () => {
-    startedSync = true;
     console.log('Started system synchronization...');
   });
   socket.emit('sync:App', sync(io));
   syncEmitter.on('sync:Finish', () => {
-    isSync = true;
     console.log('Finished system synchronization...');
   });
+  return true;
 }
 
 function sync(io) {
   return function(data) {
     if(data) {
-      const success = writeDataOnJSONFile(data);
+      const success = writeDataOnBSONFile('.residence.bson', data);
       if(success) {
         const { boards, rooms } = data;
         if(boards && rooms) {
@@ -65,8 +49,6 @@ function sync(io) {
     }
   }
 }
-
-
 
 function startSync(io, dataBoards, dataRooms) {
   if((Array.isArray(dataBoards) && dataBoards.length > 0) && (Array.isArray(dataRooms) && dataRooms.length > 0)) {

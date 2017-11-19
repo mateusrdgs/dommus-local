@@ -1,4 +1,6 @@
-const fs = require('fs');
+const fs = require('fs'),
+      BSON = require('bson'),
+      bson = new BSON();
 
 function addItemToCollection(collection, item) {
   collection.push(item);
@@ -57,8 +59,15 @@ function iterateOverObjectProperties(target, values, index) {
   }
 }
 
-function readDataFromJSONFile(fileName) {
-  return JSON.parse(fs.readFileSync(fileName));
+function readDataFromBSONFile(fileName) {
+  try {
+    const data = fs.readFileSync(fileName);
+    return bson.deserialize(data);
+  }
+  catch(exception) {
+    console.error(exception);
+    return false;
+  }
 }
 
 function returnTargetSplice(target, index, quantity) {
@@ -66,9 +75,9 @@ function returnTargetSplice(target, index, quantity) {
   return target;
 }
 
-function writeDataOnJSONFile(data) {
+function writeDataOnBSONFile(fileName, data) {
   try {
-    fs.writeFileSync('residence.json', JSON.stringify(data));
+    fs.writeFileSync(fileName, bson.serialize(data));
     return true;
   }
   catch(exception) {
@@ -86,6 +95,6 @@ module.exports = {
   filterItemFromCollectionByProperty,
   flatArray,
   iterateOverObjectProperties,
-  readDataFromJSONFile,
-  writeDataOnJSONFile
+  readDataFromBSONFile,
+  writeDataOnBSONFile
 }
