@@ -6,7 +6,7 @@ const five = require('johnny-five'),
       _Tasks = require('../collections/task'),
       Task = require('../models/task'),
       _Components = require('../collections/component'),
-      { addItemToCollection, filterItemFromCollectionByProperty } = require('../shared/helpers');
+      { addItemToCollection, filterItemFromCollectionByProperty, readDataFromBSONFile, writeDataOnBSONFile } = require('../shared/helpers');
 
 function taskCreator(io, data, component) {
   switch(component.constructor) {
@@ -72,11 +72,17 @@ function saveTask(id, data, _Tasks) {
           milliseconds
         );
   addItemToCollection(_Tasks, task);
+  saveOnBSONFile(_Tasks);
 }
 
 function changeTaskStatus(id, _Tasks) {
   const task = filterItemFromCollectionByProperty(_Tasks, 'id', id);
   task['status'] = true;
+  saveOnBSONFile(_Tasks);
+}
+
+function saveOnBSONFile(_Tasks) {
+  writeDataOnBSONFile('.tasks.bson', _Tasks);
 }
 
 module.exports = {

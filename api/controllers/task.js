@@ -1,7 +1,7 @@
 const _Tasks = require('../collections/task'),
       _Components = require('../collections/component'),
       { taskCreator } = require('../shared/task'),
-      { filterItemFromCollectionByProperty } = require('../shared/helpers');
+      { filterItemFromCollectionByProperty, readDataFromBSONFile } = require('../shared/helpers');
 
 function createTask(io, data) {
   const { id } = data,
@@ -18,7 +18,7 @@ function returnTask(data) {
 }
 
 function returnTasks() {
-  return _Tasks;
+  return (_Tasks.length ? _Tasks : readDataFromBSONFile('.tasks.bson'));
 }
 
 module.exports = {
