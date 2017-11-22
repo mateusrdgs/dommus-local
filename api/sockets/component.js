@@ -10,7 +10,9 @@ const io = require('../../index').io,
 io.on('connection', socket => {
   socket.on('component:Create', (data, callback) => {
     const component = createComponent(io, data);
-    callback(!!component);
+    if(callback) {
+      callback(!!component);
+    }
   });
   socket.on('component:Get', data => {
     const component = returnComponent(data);
@@ -18,10 +20,14 @@ io.on('connection', socket => {
   });
   socket.on('component:Update', (data, callback) => {
     const component = updateComponent(data);
-    callback(!!component);
+    if(callback) {
+      callback(!!component);
+    }
   });
-  socket.on('component:Delete', data => {
-    
+  socket.on('component:Delete', (data, callback) => {
+    if(callback) {
+      
+    }
   });
   socket.on('component:State', data => {
     const state = changeComponentState(data);

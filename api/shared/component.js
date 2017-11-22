@@ -331,36 +331,7 @@ function filterComponentsByLevenshteinDistance(_Components, voiceCommand) {
       return component.id === filteredComponent.id;
     });
     return minor;
-    /*(return _Components.filter(component => {
-      const minorDistance = Math.min(...distancedComponents.map(component => component.distance))
-    })
-    const minorDistance = Math.min(...distancedComponents.map(component => component.distance));
-    const filteredComponent = distancedComponents.filter(component => component.distance === minorDistance);*/
-    
-    
-    /*return Math.min(
-      _Components.map(component => ({ id: component.id, command: component.custom.command }))
-                 .map(component => component.command.map(command => ({ id: component.id, command })))
-                 .reduce((prev, curr) => [...prev, ...curr])
-                 .map(component => levenshteinDistance(component.command, voiceCommand))
-    );
-    return comps.reduce((prev, curr) => {
-      return Math.min(
-        levenshteinDistance(prev.command, voiceCommand),
-        levenshteinDistance(curr.command, voiceCommand)
-      );
-    });*/
   }
-                             //[prev.reduce((prev, curr) => [prev, ...curr]), ...curr.reduce((prev, curr) => [prev, ...curr])]);
-    
-    /*return _Components.filter(component => {
-      return component.custom.command
-                      .some(command => {
-                        const dist = levenshteinDistance(command, voiceCommand),
-                              sub = 1 - (dist / command.length);
-                        return sub  >= 0.6;
-                      });
-    });*/
 }
 
 module.exports = {

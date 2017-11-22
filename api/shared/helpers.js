@@ -32,18 +32,18 @@ function flatArray(arr, prevArr) {
   return [...arr, ...prevArr];
 }
 
-function iterateOverObjectProperties(target, values, index) {
+function transformObjectIntoArray(target, values, index) {
   if(Array.isArray(values) && index >= values.length) {
     return values;
   }
   else {
     if(!values) {
-      return iterateOverObjectProperties(target, extractValues(target), 0);
+      return transformObjectIntoArray(target, extractValues(target), 0);
     }
     else {
       if(checkIfIsObject(values[index])) {
         const extractedValues = extractValues(values[index]);
-        return iterateOverObjectProperties(
+        return transformObjectIntoArray(
           target,
           flatArray(
             returnTargetSplice(values, index, 1),
@@ -53,7 +53,7 @@ function iterateOverObjectProperties(target, values, index) {
         );
       }
       else {
-        return iterateOverObjectProperties(target, values, ++index);
+        return transformObjectIntoArray(target, values, ++index);
       }
     }
   }
@@ -62,7 +62,8 @@ function iterateOverObjectProperties(target, values, index) {
 function readDataFromBSONFile(fileName) {
   try {
     const data = fs.readFileSync(fileName);
-    return bson.deserialize(data);
+    const t = bson.deserialize(data);
+    return t;
   }
   catch(exception) {
     console.error(exception);
@@ -94,7 +95,7 @@ module.exports = {
   extractValues,
   filterItemFromCollectionByProperty,
   flatArray,
-  iterateOverObjectProperties,
+  transformObjectIntoArray,
   readDataFromBSONFile,
   writeDataOnBSONFile
 }

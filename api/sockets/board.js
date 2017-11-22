@@ -13,9 +13,13 @@ io.on('connection', socket => {
   });
   socket.on('board:Update', (data, callback) => {
     const board = updateBoard(data);
-    callback(!!board);
+    if(callback) {
+      callback(!!board);
+    }
   });
-  socket.on('board:Delete', data => {
-    
+  socket.on('board:Delete', (data, callback) => {
+    if(callback) {
+      
+    }
   });
 });
