@@ -20,7 +20,7 @@ function updateComponent(data) {
   const { id, idBoard } = data,
         board = filterItemFromCollectionByProperty(_Boards, 'id', idBoard),
         component = filterItemFromCollectionByProperty(_Components, 'id', id);
-  componentUpdater(component, board, data);
+  return componentUpdater(component, board, data);
 }
 
 function returnComponent(data) {
