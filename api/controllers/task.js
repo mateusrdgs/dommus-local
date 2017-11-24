@@ -18,7 +18,16 @@ function returnTask(data) {
 }
 
 function returnTasks() {
-  return (_Tasks.length ? _Tasks : readDataFromBSONFile('.tasks.bson'));
+  const tasks = readDataFromBSONFile('.tasks.bson'),
+        tasksArray = [];
+  if(tasks) {
+    for (const key in tasks) {
+      if (tasks.hasOwnProperty(key)) {
+        tasksArray.push(tasks[key]);
+      }
+    }
+    return tasksArray;
+  }
 }
 
 module.exports = {

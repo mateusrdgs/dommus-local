@@ -62,8 +62,7 @@ function transformObjectIntoArray(target, values, index) {
 function readDataFromBSONFile(fileName) {
   try {
     const data = fs.readFileSync(fileName);
-    const t = bson.deserialize(data);
-    return t;
+    return bson.deserialize(data);
   }
   catch(exception) {
     console.error(exception);
