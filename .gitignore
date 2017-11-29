@@ -59,3 +59,6 @@ typings/
 
 # .residence bson
 .residence.bson
+
+# .tasks bson
+.tasks.bson

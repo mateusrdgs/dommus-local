@@ -65,7 +65,7 @@ function readDataFromBSONFile(fileName) {
     return bson.deserialize(data);
   }
   catch(exception) {
-    console.error(exception);
+    console.error("Arquivo inexistente...");
     return false;
   }
 }

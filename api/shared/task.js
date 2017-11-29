@@ -71,6 +71,7 @@ function saveTask(id, data, _Tasks) {
           false,
           milliseconds
         );
+
   addItemToCollection(_Tasks, task);
   saveOnBSONFile(_Tasks);
 }
