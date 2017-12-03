@@ -60,36 +60,37 @@ function componentsExtractor(_Components) {
 }
 
 function componentUpdater(component, board, data) {
-  switch(component.constructor) {
-    case Led: {
-      updateLedOrMotion(component, data, board);
-      break;
-    }
-    case Thermometer: {
-      updateThermometer(component, data, board);
-      break;
-    }
-    case Light: {
-      updateLightOrSensor(component, data, board);
-      break;
-    }
-    case Motion: {
-      updateLedOrMotion(component, data, board);
-      break;
-    }
-    case Sensor: {
-      updateLightOrSensor(component, data, board);
-      break;
-    }
-    case Servo: {
-      updateServo(component, data, board);
-      break;
-    }
-    default: {
-      return false;
+  if(component) {
+    switch(component.constructor) {
+      case Led: {
+        return updateLedOrMotion(component, data, board);
+      }
+      case Thermometer: {
+        updateThermometer(component, data, board);
+        break;
+      }
+      case Light: {
+        updateLightOrSensor(component, data, board);
+        break;
+      }
+      case Motion: {
+        updateLedOrMotion(component, data, board);
+        break;
+      }
+      case Sensor: {
+        updateLightOrSensor(component, data, board);
+        break;
+      }
+      case Servo: {
+        updateServo(component, data, board);
+        break;
+      }
+      default: {
+        return false;
+      }
     }
   }
-  return componentsExtractor([component]);
+  return false;
 }
 
 function componentStateUpdater(component, data) {
@@ -194,14 +195,22 @@ function createServo(data, board) {
 }
 
 function updateLedOrMotion(component, data, board) {
-  const { description, digitalPin, command } = data;
-  component.custom.description = description || component.custom.description;
+  if(component.custom.hasOwnProperty('command')) {
+    return createLed(data, board);
+  }
+  else {
+    return createMotion(data, board);
+  }
+  /*const { description, digitalPin, command } = data;
+  /*component.custom.description = description || component.custom.description;
   component.pin = digitalPin || component.pin;
   component.board = board;
   component.io = board;
   if(component.custom.hasOwnProperty('command')) {
     component.custom.command = command;
   }
+  component = null;
+  component = createLed(data, board);*/
 }
 
 function updateThermometer(component, data, board) {

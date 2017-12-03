@@ -19,8 +19,12 @@ function createComponent(io, data) {
 function updateComponent(data) {
   const { id, idBoard } = data,
         board = filterItemFromCollectionByProperty(_Boards, 'id', idBoard),
-        component = filterItemFromCollectionByProperty(_Components, 'id', id);
-  return componentUpdater(component, board, data);
+        component = filterItemFromCollectionByProperty(_Components, 'id', id),
+        index = _Components.indexOf(component);
+  if(index >= 0) {
+    _Components.splice(index, 1, componentUpdater(component, board, data));
+  }
+  return index >= 0;
 }
 
 function returnComponent(data) {
