@@ -333,7 +333,8 @@ function filterServo(_component) {
 function filterComponentsByLevenshteinDistance(_Components, voiceCommand) {
   if(Array.isArray(_Components)) {
     const distancedComponents =
-      _Components.map(component => ({ id: component.id, command: component.custom.command }))
+      _Components.filter(component => component.constructor === Led || component.constructor === Servo)
+                 .map(component => ({ id: component.id, command: component.custom.command }))
                  .map(component => component.command.map(command => ({ id: component.id, distance: levenshteinDistance(command, voiceCommand) })))
                  .reduce((prev, curr) => [...prev, ...curr]);
     const minor = _Components.filter(component => {
