@@ -93,14 +93,16 @@ function componentUpdater(component, board, data) {
 }
 
 function componentStateUpdater(component, data) {
-  switch(component.constructor) {
-    case Led: {
-        updateLedState(component, data);
-      break;
-    }
-    case Servo: {
-        updateServoState(component, data);
-      break;
+  if(component) {
+    switch(component.constructor) {
+      case Led: {
+          updateLedState(component, data);
+        break;
+      }
+      case Servo: {
+          updateServoState(component, data);
+        break;
+      }
     }
   }
 }
@@ -334,10 +336,24 @@ function filterComponentsByLevenshteinDistance(_Components, voiceCommand) {
   }
 }
 
+function componentsDeleter(_Components, _component) {
+  if(Array.isArray(_Components)) {
+    const index = _Components.indexOf(_component);
+    if(index >= 0) {
+      _component.io = null;
+      _component.board = null;
+      _Components.splice(index, 1);
+      return _component;
+    }
+    return false;
+  }
+}
+
 module.exports = {
   componentCreator,
   componentUpdater,
   componentStateUpdater,
   componentStateVoiceUpdater,
-  componentsExtractor
+  componentsExtractor,
+  componentsDeleter
 };

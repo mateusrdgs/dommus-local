@@ -4,7 +4,8 @@ const io = require('../../index').io,
         updateComponent,
         returnComponents,
         changeComponentState,
-        changeComponentStateVoice
+        changeComponentStateVoice,
+        deleteComponent
       } = require('../controllers/component');
 
 io.on('connection', socket => {
@@ -25,8 +26,9 @@ io.on('connection', socket => {
     }
   });
   socket.on('component:Delete', (data, callback) => {
+    const component = deleteComponent(data);
     if(callback) {
-      
+      callback(!!component);
     }
   });
   socket.on('component:State', data => {

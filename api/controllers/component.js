@@ -1,7 +1,7 @@
 const _Components = require('../collections/component'),
       _Boards = require('../collections/board'),
       registerListener = require('../shared/register'),
-      { componentCreator, componentUpdater, componentStateUpdater, componentStateVoiceUpdater, componentsExtractor } = require('../shared/component'),
+      { componentCreator, componentUpdater, componentStateUpdater, componentStateVoiceUpdater, componentsExtractor, componentsDeleter } = require('../shared/component'),
       { addItemToCollection, filterItemFromCollectionByProperty } = require('../shared/helpers');
 
 
@@ -43,11 +43,18 @@ function changeComponentStateVoice(voiceCommand) {
   return componentStateVoiceUpdater(_Components, voiceCommand);
 }
 
+function deleteComponent(data) {
+  const { id } = data,
+        component = filterItemFromCollectionByProperty(_Components, 'id', id);
+  return componentsDeleter(_Components, component);
+}
+
 module.exports = {
   createComponent,
   updateComponent,
   returnComponent,
   changeComponentState,
   changeComponentStateVoice,
-  returnComponents
+  returnComponents,
+  deleteComponent
 }
